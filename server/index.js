@@ -152,7 +152,7 @@ app.get("/api/projects", (req, res) => {
       ],
       image: "/images/Portfolio.png",
       github: "https://github.com/MdAwais343/Awais-Portfolio",
-      live: "https://muhammad-awais.com",
+      live: "https://awais-portfolio-sage.vercel.app/",
       featured: false,
     },
   ];
