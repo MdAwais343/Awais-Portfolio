@@ -244,6 +244,7 @@
     grid-template-columns: 1fr;
     text-align: center;
     gap: 2rem;
+    padding-bottom: 4rem; /* Add space for scroll indicator */
   }
 
   .hero-text h1,
@@ -275,9 +276,25 @@
   .shape {
     display: none;
   }
+
+  /* Reposition scroll indicator for mobile */
+  .scroll-indicator {
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10; /* Ensure it's above other elements */
+  }
+
+  .scroll-indicator svg {
+    font-size: 1.25rem;
+  }
 }
 
 @media (max-width: 480px) {
+  .hero-content {
+    padding-bottom: 3rem; /* Less padding for smaller screens */
+  }
+
   .hero-buttons {
     flex-direction: column;
     align-items: center;
@@ -299,5 +316,14 @@
 
   .hero-social {
     gap: 1rem;
+  }
+
+  /* Further adjust scroll indicator for very small screens */
+  .scroll-indicator {
+    bottom: 0.5rem;
+  }
+
+  .scroll-indicator svg {
+    font-size: 1.1rem;
   }
 }
