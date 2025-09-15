@@ -11,10 +11,19 @@
     "install-all": "npm install && cd server && npm install && cd ../client && npm install",
     "start": "cd server && npm start"
   },
-  "keywords": ["portfolio", "software engineer", "react", "node", "fullstack"],
+  "keywords": [
+    "portfolio",
+    "software engineer",
+    "react",
+    "node",
+    "fullstack"
+  ],
   "author": "Muhammad Awais",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "react-scripts": "^5.0.1"
   }
 }
