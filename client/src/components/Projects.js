@@ -44,6 +44,17 @@ const Projects = () => {
       live: "https://getir-clone.vercel.app",
       featured: true,
     },
+    {
+      id: 4,
+      title: "TextStruct",
+      description:
+        "A text structure analysis tool that helps organize and format text content with advanced parsing capabilities.",
+      image: "/images/TextStruct.png",
+      technologies: ["React", "JavaScript", "CSS3", "Text Processing"],
+      github: "https://github.com/yourusername/textstruct",
+      live: "https://textstruct.vercel.app",
+      featured: false,
+    },
   ]);
   const [filteredProjects, setFilteredProjects] = useState([]);
   const [activeFilter, setActiveFilter] = useState("all");
@@ -67,7 +78,7 @@ const Projects = () => {
     };
 
     fetchProjects();
-  }, [projects]);
+  }, []);
 
   const filters = [
     { id: "all", label: "All Projects" },
