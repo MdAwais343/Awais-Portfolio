@@ -10,9 +10,24 @@ const Skills = () => {
     threshold: 0.1,
   });
   const [skills, setSkills] = useState({
-    frontend: [],
-    backend: [],
-    tools: [],
+    frontend: [
+      { name: "React", level: 90 },
+      { name: "JavaScript", level: 85 },
+      { name: "HTML/CSS", level: 95 },
+      { name: "Vue.js", level: 80 },
+    ],
+    backend: [
+      { name: "Node.js", level: 85 },
+      { name: "Express", level: 80 },
+      { name: "MongoDB", level: 75 },
+      { name: "Python", level: 70 },
+    ],
+    tools: [
+      { name: "Git", level: 85 },
+      { name: "VS Code", level: 90 },
+      { name: "Docker", level: 70 },
+      { name: "AWS", level: 65 },
+    ],
   });
   const [loading, setLoading] = useState(true);
 
@@ -20,10 +35,13 @@ const Skills = () => {
     const fetchSkills = async () => {
       try {
         const response = await axios.get("/api/skills");
-        setSkills(response.data);
+        if (response.data && response.data.frontend) {
+          setSkills(response.data);
+        }
         setLoading(false);
       } catch (error) {
         console.error("Error fetching skills:", error);
+        // Keep default data if API fails
         setLoading(false);
       }
     };

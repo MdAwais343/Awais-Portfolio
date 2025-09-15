@@ -10,17 +10,39 @@ const Experience = () => {
     triggerOnce: true,
     threshold: 0.1,
   });
-  const [experience, setExperience] = useState([]);
+  const [experience, setExperience] = useState([
+    {
+      id: 1,
+      position: "Software Engineer",
+      company: "Tech Solutions Inc.",
+      duration: "2023 - Present",
+      description:
+        "Developing and maintaining web applications using modern technologies. Leading a team of 3 developers and implementing best practices for code quality and performance.",
+      technologies: ["React", "Node.js", "MongoDB", "AWS", "Docker"],
+    },
+    {
+      id: 2,
+      position: "Frontend Developer",
+      company: "Digital Agency",
+      duration: "2022 - 2023",
+      description:
+        "Created responsive and interactive user interfaces for various clients. Collaborated with design teams to implement pixel-perfect designs and optimize user experience.",
+      technologies: ["React", "JavaScript", "CSS3", "HTML5", "Figma"],
+    },
+  ]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchExperience = async () => {
       try {
         const response = await axios.get("/api/experience");
-        setExperience(response.data);
+        if (response.data && Array.isArray(response.data)) {
+          setExperience(response.data);
+        }
         setLoading(false);
       } catch (error) {
         console.error("Error fetching experience:", error);
+        // Keep default data if API fails
         setLoading(false);
       }
     };
