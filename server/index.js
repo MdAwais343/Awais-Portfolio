@@ -3,6 +3,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const nodemailer = require("nodemailer");
+const path = require("path");
 require("dotenv").config();
 
 const app = express();
@@ -14,6 +15,9 @@ app.use(cors());
 app.use(morgan("combined"));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+// Serve static files from client public directory
+app.use(express.static(path.join(__dirname, "../client/public")));
 
 // Routes
 app.get("/api/health", (req, res) => {
@@ -34,7 +38,7 @@ app.post("/api/contact", async (req, res) => {
     }
 
     // Email configuration (you'll need to set up your email credentials)
-    const transporter = nodemailer.createTransporter({
+    const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
         user: process.env.EMAIL_USER || "your-email@gmail.com",
@@ -76,41 +80,60 @@ app.get("/api/projects", (req, res) => {
   const projects = [
     {
       id: 1,
-      title: "E-Commerce Platform",
+      title: "Getir Clone",
       description:
-        "Full-stack e-commerce application with React, Node.js, and MongoDB. Features include user authentication, product management, shopping cart, and payment integration.",
-      technologies: ["React", "Node.js", "MongoDB", "Express", "Stripe"],
-      image: "/images/project1.jpg",
-      github: "https://github.com/yourusername/ecommerce",
-      live: "https://ecommerce-demo.com",
+        "Full-stack getir clone application with React, Node.js, and MongoDB. Features include user authentication, product management, shopping cart, and payment integration.",
+      technologies: [
+        "React",
+        "Node.js",
+        "MongoDB",
+        "Express",
+        "Stripe",
+        "Tailwind CSS",
+      ],
+      image: "/images/getir-clone.png",
+      github: "https://github.com/MdAwais343/Getir-Clone",
+      live: "https://getir-clone-silk.vercel.app/",
       featured: true,
     },
     {
       id: 2,
-      title: "Task Management App",
+      title: "NewsUpdate",
       description:
-        "Collaborative task management application with real-time updates, team collaboration, and progress tracking.",
-      technologies: ["React", "Node.js", "Socket.io", "PostgreSQL", "Redux"],
-      image: "/images/project2.jpg",
-      github: "https://github.com/yourusername/task-manager",
-      live: "https://task-manager-demo.com",
+        "NewsUpdate is a news application that allows you to read news from different sources.",
+      technologies: [
+        "React",
+        "Node.js",
+        "MongoDB",
+        "NewsAPI",
+        "Express",
+        "Tailwind CSS",
+        "React Icons",
+        "React Router",
+        "React Icons",
+      ],
+      image: "/images/NewsUpdate.png",
+      github: "https://github.com/MdAwais343/NewsUpdate",
+      live: "https://news-update-mauve.vercel.app/",
       featured: true,
     },
     {
       id: 3,
-      title: "Weather Dashboard",
+      title: "TextStruct App",
       description:
-        "Real-time weather application with location detection, 7-day forecast, and interactive charts.",
+        "Real-time text structure application with text analysis, text summarization, and text generation.",
       technologies: [
         "React",
         "Chart.js",
-        "OpenWeather API",
+        "TextSummarization API",
         "CSS3",
         "Responsive Design",
+        "Tailwind CSS",
+        "Framer Motion",
       ],
-      image: "/images/project3.jpg",
-      github: "https://github.com/yourusername/weather-app",
-      live: "https://weather-demo.com",
+      image: "/images/TextStruct.png",
+      github: "https://github.com/MdAwais343/textstruct",
+      live: "https://textstruct308.vercel.app/",
       featured: false,
     },
     {
@@ -124,9 +147,11 @@ app.get("/api/projects", (req, res) => {
         "Express",
         "CSS3",
         "Responsive Design",
+        "Tailwind CSS",
+        "Framer Motion",
       ],
-      image: "/images/project4.jpg",
-      github: "https://github.com/yourusername/portfolio",
+      image: "/images/Portfolio.png",
+      github: "https://github.com/MdAwais343/Awais-Portfolio",
       live: "https://muhammad-awais.com",
       featured: false,
     },
