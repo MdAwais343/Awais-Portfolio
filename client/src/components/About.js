@@ -65,7 +65,7 @@ const About = () => {
             <p>
               I'm Muhammad Awais, a passionate and experienced Software Engineer
               with a deep love for creating innovative digital solutions. With
-              over 4 years of experience in the tech industry, I've had the
+              over 1 years of experience in the tech industry, I've had the
               privilege of working on diverse projects that have shaped my
               expertise in full-stack development.
             </p>

@@ -13,92 +13,156 @@ const Projects = () => {
   const [projects, setProjects] = useState([
     {
       id: 1,
-      title: "Portfolio Website",
+      title: "Getir Clone",
       description:
-        "A modern, responsive portfolio website built with React and showcasing my projects and skills.",
-      image: "/images/Portfolio.png",
-      technologies: ["React", "CSS3", "JavaScript", "Framer Motion"],
-      github: "https://github.com/yourusername/portfolio",
-      live: "https://yourportfolio.vercel.app",
+        "Full-stack getir clone application with React, Node.js, and MongoDB. Features include user authentication, product management, shopping cart, and payment integration.",
+      technologies: [
+        "React",
+        "Node.js",
+        "MongoDB",
+        "Express",
+        "Stripe",
+        "Tailwind CSS",
+      ],
+      image: "/images/getir-clone.png",
+      github: "https://github.com/MdAwais343/Getir-Clone",
+      live: "https://getir-clone-silk.vercel.app/",
       featured: true,
     },
     {
       id: 2,
-      title: "News Update App",
+      title: "NewsUpdate",
       description:
-        "A real-time news application with category filtering and search functionality.",
+        "NewsUpdate is a news application that allows you to read news from different sources.",
+      technologies: [
+        "React",
+        "Node.js",
+        "MongoDB",
+        "NewsAPI",
+        "Express",
+        "Tailwind CSS",
+        "React Icons",
+        "React Router",
+      ],
       image: "/images/NewsUpdate.png",
-      technologies: ["React", "API Integration", "CSS3"],
-      github: "https://github.com/yourusername/news-app",
-      live: "https://newsapp.vercel.app",
-      featured: false,
-    },
-    {
-      id: 3,
-      title: "Getir Clone",
-      description:
-        "A full-stack e-commerce application inspired by Getir with user authentication and payment integration.",
-      image: "/images/getir-clone.png",
-      technologies: ["React", "Node.js", "MongoDB", "Express"],
-      github: "https://github.com/yourusername/getir-clone",
-      live: "https://getir-clone.vercel.app",
+      github: "https://github.com/MdAwais343/NewsUpdate",
+      live: "https://news-update-mauve.vercel.app/",
       featured: true,
     },
     {
-      id: 4,
-      title: "TextStruct",
+      id: 3,
+      title: "TextStruct App",
       description:
-        "A text structure analysis tool that helps organize and format text content with advanced parsing capabilities.",
+        "Real-time text structure application with text analysis, text summarization, and text generation.",
+      technologies: [
+        "React",
+        "Chart.js",
+        "TextSummarization API",
+        "CSS3",
+        "Responsive Design",
+        "Tailwind CSS",
+        "Framer Motion",
+      ],
       image: "/images/TextStruct.png",
-      technologies: ["React", "JavaScript", "CSS3", "Text Processing"],
-      github: "https://github.com/yourusername/textstruct",
-      live: "https://textstruct.vercel.app",
+      github: "https://github.com/MdAwais343/textstruct",
+      live: "https://textstruct308.vercel.app/",
+      featured: false,
+    },
+    {
+      id: 4,
+      title: "Portfolio Website",
+      description:
+        "Personal portfolio website built with modern web technologies and responsive design.",
+      technologies: [
+        "React",
+        "Node.js",
+        "Express",
+        "CSS3",
+        "Responsive Design",
+        "Tailwind CSS",
+        "Framer Motion",
+      ],
+      image: "/images/Portfolio.png",
+      github: "https://github.com/MdAwais343/Awais-Portfolio",
+      live: "https://awais-portfolio-sage.vercel.app/",
       featured: false,
     },
   ]);
   const [filteredProjects, setFilteredProjects] = useState([
     {
       id: 1,
-      title: "Portfolio Website",
+      title: "Getir Clone",
       description:
-        "A modern, responsive portfolio website built with React and showcasing my projects and skills.",
-      image: "/images/Portfolio.png",
-      technologies: ["React", "CSS3", "JavaScript", "Framer Motion"],
-      github: "https://github.com/yourusername/portfolio",
-      live: "https://yourportfolio.vercel.app",
+        "Full-stack getir clone application with React, Node.js, and MongoDB. Features include user authentication, product management, shopping cart, and payment integration.",
+      technologies: [
+        "React",
+        "Node.js",
+        "MongoDB",
+        "Express",
+        "Stripe",
+        "Tailwind CSS",
+      ],
+      image: "/images/getir-clone.png",
+      github: "https://github.com/MdAwais343/Getir-Clone",
+      live: "https://getir-clone-silk.vercel.app/",
       featured: true,
     },
     {
       id: 2,
-      title: "News Update App",
+      title: "NewsUpdate",
       description:
-        "A real-time news application with category filtering and search functionality.",
+        "NewsUpdate is a news application that allows you to read news from different sources.",
+      technologies: [
+        "React",
+        "Node.js",
+        "MongoDB",
+        "NewsAPI",
+        "Express",
+        "Tailwind CSS",
+        "React Icons",
+        "React Router",
+      ],
       image: "/images/NewsUpdate.png",
-      technologies: ["React", "API Integration", "CSS3"],
-      github: "https://github.com/yourusername/news-app",
-      live: "https://newsapp.vercel.app",
-      featured: false,
-    },
-    {
-      id: 3,
-      title: "Getir Clone",
-      description:
-        "A full-stack e-commerce application inspired by Getir with user authentication and payment integration.",
-      image: "/images/getir-clone.png",
-      technologies: ["React", "Node.js", "MongoDB", "Express"],
-      github: "https://github.com/yourusername/getir-clone",
-      live: "https://getir-clone.vercel.app",
+      github: "https://github.com/MdAwais343/NewsUpdate",
+      live: "https://news-update-mauve.vercel.app/",
       featured: true,
     },
     {
-      id: 4,
-      title: "TextStruct",
+      id: 3,
+      title: "TextStruct App",
       description:
-        "A text structure analysis tool that helps organize and format text content with advanced parsing capabilities.",
+        "Real-time text structure application with text analysis, text summarization, and text generation.",
+      technologies: [
+        "React",
+        "Chart.js",
+        "TextSummarization API",
+        "CSS3",
+        "Responsive Design",
+        "Tailwind CSS",
+        "Framer Motion",
+      ],
       image: "/images/TextStruct.png",
-      technologies: ["React", "JavaScript", "CSS3", "Text Processing"],
-      github: "https://github.com/yourusername/textstruct",
-      live: "https://textstruct.vercel.app",
+      github: "https://github.com/MdAwais343/textstruct",
+      live: "https://textstruct308.vercel.app/",
+      featured: false,
+    },
+    {
+      id: 4,
+      title: "Portfolio Website",
+      description:
+        "Personal portfolio website built with modern web technologies and responsive design.",
+      technologies: [
+        "React",
+        "Node.js",
+        "Express",
+        "CSS3",
+        "Responsive Design",
+        "Tailwind CSS",
+        "Framer Motion",
+      ],
+      image: "/images/Portfolio.png",
+      github: "https://github.com/MdAwais343/Awais-Portfolio",
+      live: "https://awais-portfolio-sage.vercel.app/",
       featured: false,
     },
   ]);
@@ -110,8 +174,8 @@ const Projects = () => {
       try {
         const response = await axios.get("/api/projects");
         if (response.data && Array.isArray(response.data)) {
-        setProjects(response.data);
-        setFilteredProjects(response.data);
+          setProjects(response.data);
+          setFilteredProjects(response.data);
         }
         setLoading(false);
       } catch (error) {
@@ -123,7 +187,7 @@ const Projects = () => {
     };
 
     fetchProjects();
-  }, []);
+  }, [projects]);
 
   const filters = [
     { id: "all", label: "All Projects" },
