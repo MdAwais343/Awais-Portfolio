@@ -14,7 +14,6 @@ import {
   SiAmazonaws,
   SiVercel,
   SiCloudflare,
-  SiDigitalocean,
   SiGit,
   SiGithub,
   SiGithubactions,

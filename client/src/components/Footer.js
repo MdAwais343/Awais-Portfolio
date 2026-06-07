@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Github, Linkedin, Twitter, Heart, ArrowUp } from "lucide-react";
+import { Github, Linkedin, Twitter, ArrowUp } from "lucide-react";
 import { PROFILE, SOCIALS, NAV_ITEMS } from "../data/portfolio";
 
 const Footer = () => {
