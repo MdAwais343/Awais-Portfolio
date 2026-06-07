@@ -1,146 +1,93 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { FaGithub, FaLinkedin, FaTwitter, FaHeart } from "react-icons/fa";
-import "./Footer.css";
+import { Github, Linkedin, Twitter, Heart, ArrowUp } from "lucide-react";
+import { PROFILE, SOCIALS, NAV_ITEMS } from "../data/portfolio";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
-  const socialLinks = [
-    {
-      icon: <FaGithub />,
-      name: "GitHub",
-      url: "https://github.com/MdAwais343",
-      color: "#333",
-    },
-    {
-      icon: <FaLinkedin />,
-      name: "LinkedIn",
-      url: "https://www.linkedin.com/in/muhammadawais343",
-      color: "#0077b5",
-    },
-    {
-      icon: <FaTwitter />,
-      name: "Twitter",
-      url: "https://x.com/mhmdawys1",
-      color: "#1da1f2",
-    },
+  const socials = [
+    { Icon: Github, href: SOCIALS.github, label: "GitHub" },
+    { Icon: Linkedin, href: SOCIALS.linkedin, label: "LinkedIn" },
+    { Icon: Twitter, href: SOCIALS.twitter, label: "Twitter" },
   ];
 
+  const scrollTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
   return (
-    <footer className="footer">
-      <div className="container">
-        <div className="footer-content">
-          <motion.div
-            className="footer-brand"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="footer-logo-container">
-              <svg viewBox="0 0 32 32" className="footer-logo-svg">
-                <defs>
-                  <linearGradient
-                    id="footerGradient"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="100%"
-                  >
-                    <stop
-                      offset="0%"
-                      style={{ stopColor: "#667eea", stopOpacity: 1 }}
-                    />
-                    <stop
-                      offset="100%"
-                      style={{ stopColor: "#764ba2", stopOpacity: 1 }}
-                    />
-                  </linearGradient>
-                </defs>
-                <circle
-                  cx="16"
-                  cy="16"
-                  r="15"
-                  fill="url(#footerGradient)"
-                  stroke="url(#footerGradient)"
-                  strokeWidth="1"
-                />
-                <g fill="white">
-                  <path d="M6 24V8h3l3 8 3-8h3v16h-2V12l-3 8-3-8v12H6z" />
-                  <path d="M20 8h3l4 12h-2l-1-3h-4l-1 3h-2L20 8zm1 2l-2.5 7h5L21 10z" />
-                </g>
-              </svg>
-              <div className="footer-logo-text">
-                <h3>Muhammad Awais</h3>
-                <p>Software Engineer & Full-Stack Developer</p>
+    <footer className="relative border-t border-white/10 px-5 pb-10 pt-16 sm:px-8">
+      <div className="shell">
+        <div className="grid gap-10 md:grid-cols-3">
+          {/* Brand */}
+          <div>
+            <div className="flex items-center gap-3">
+              <span className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-accent to-accent-secondary font-display text-sm font-bold text-white shadow-glow">
+                MA
+              </span>
+              <div>
+                <h3 className="font-display text-base font-semibold text-white">{PROFILE.name}</h3>
+                <p className="text-xs text-muted">Software Engineer & Full-Stack Developer</p>
               </div>
             </div>
-          </motion.div>
+            <p className="mt-5 max-w-xs text-sm text-muted">
+              Building scalable web and mobile applications with modern technologies and a strong
+              focus on detail.
+            </p>
+          </div>
 
-          <motion.div
-            className="footer-social"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <h4>Connect With Me</h4>
-            <div className="social-links">
-              {socialLinks.map((social, index) => (
+          {/* Quick links */}
+          <div className="md:justify-self-center">
+            <h4 className="font-display text-sm font-semibold uppercase tracking-wider text-white/80">
+              Quick Links
+            </h4>
+            <ul className="mt-4 grid grid-cols-2 gap-x-8 gap-y-2">
+              {NAV_ITEMS.map((item) => (
+                <li key={item.id}>
+                  <a
+                    href={`#${item.id}`}
+                    className="text-sm text-muted transition-colors hover:text-white"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Connect */}
+          <div className="md:justify-self-end">
+            <h4 className="font-display text-sm font-semibold uppercase tracking-wider text-white/80">
+              Connect With Me
+            </h4>
+            <div className="mt-4 flex items-center gap-3">
+              {socials.map(({ Icon, href, label }) => (
                 <motion.a
-                  key={index}
-                  href={social.url}
+                  key={label}
+                  href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="social-link"
-                  style={{ "--social-color": social.color }}
-                  whileHover={{ scale: 1.2, y: -3 }}
-                  whileTap={{ scale: 0.9 }}
+                  aria-label={label}
+                  whileHover={{ y: -3, scale: 1.1 }}
+                  className="grid h-11 w-11 place-items-center rounded-xl glass text-white/80 transition-colors hover:text-white"
                 >
-                  {social.icon}
+                  <Icon className="h-5 w-5" />
                 </motion.a>
               ))}
             </div>
-          </motion.div>
-
-          <motion.div
-            className="footer-links"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <h4>Quick Links</h4>
-            <ul>
-              <li>
-                <a href="#about">About</a>
-              </li>
-              <li>
-                <a href="#skills">Skills</a>
-              </li>
-              <li>
-                <a href="#projects">Projects</a>
-              </li>
-              <li>
-                <a href="#experience">Experience</a>
-              </li>
-              <li>
-                <a href="#contact">Contact</a>
-              </li>
-            </ul>
-          </motion.div>
+          </div>
         </div>
 
-        <motion.div
-          className="footer-bottom"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-        >
-          <div className="footer-line"></div>
-          <p>
-            © {currentYear} Muhammad Awais. Made with{" "}
-            <FaHeart className="heart-icon" />
-          </p>
-        </motion.div>
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row">
+          <p className="flex items-center gap-1.5 text-sm text-muted">
+            © {currentYear} {PROFILE.name}. All rights reserved.          </p>
+          <button
+            onClick={scrollTop}
+            className="inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-sm text-muted transition-colors hover:text-white"
+          >
+            Back to top
+            <ArrowUp className="h-4 w-4" />
+          </button>
+        </div>
       </div>
     </footer>
   );

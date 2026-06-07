@@ -1,164 +1,93 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { motion } from "framer-motion";
-import { useInView } from "react-intersection-observer";
-import axios from "axios";
-import "./Skills.css";
+import { SKILL_CATEGORIES } from "../data/portfolio";
+import SectionHeading from "./ui/SectionHeading";
+import SpotlightCard from "./ui/SpotlightCard";
 
-const Skills = () => {
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
-  const [skills, setSkills] = useState({
-    frontend: [
-      { name: "React", level: 90 },
-      { name: "JavaScript", level: 85 },
-      { name: "HTML/CSS", level: 95 },
-      { name: "Vue.js", level: 80 },
-    ],
-    backend: [
-      { name: "Node.js", level: 85 },
-      { name: "Express", level: 80 },
-      { name: "MongoDB", level: 75 },
-      { name: "Python", level: 70 },
-    ],
-    tools: [
-      { name: "Git", level: 85 },
-      { name: "VS Code", level: 90 },
-      { name: "Docker", level: 70 },
-      { name: "AWS", level: 65 },
-    ],
-  });
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchSkills = async () => {
-      try {
-        const response = await axios.get("/api/skills");
-        if (response.data && response.data.frontend) {
-          setSkills(response.data);
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching skills:", error);
-        // Keep default data if API fails
-        setLoading(false);
-      }
-    };
-
-    fetchSkills();
-  }, []);
-
-  const SkillBar = ({ skill, index }) => (
+const SkillChip = ({ skill }) => {
+  const Icon = skill.icon;
+  return (
     <motion.div
-      className="skill-item"
-      initial={{ opacity: 0, x: -50 }}
-      animate={inView ? { opacity: 1, x: 0 } : {}}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
+      whileHover={{ y: -4 }}
+      transition={{ type: "spring", stiffness: 300, damping: 18 }}
+      className="group/skill relative overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] p-3"
     >
-      <div className="skill-header">
-        <span className="skill-name">{skill.name}</span>
-        <span className="skill-level">{skill.level}%</span>
-      </div>
-      <div className="skill-bar">
-        <motion.div
-          className="skill-progress"
-          initial={{ width: 0 }}
-          animate={inView ? { width: `${skill.level}%` } : {}}
-          transition={{ duration: 1, delay: 0.5 + index * 0.1 }}
-        />
+      <div
+        className="pointer-events-none absolute -inset-px opacity-0 transition-opacity duration-300 group-hover/skill:opacity-100"
+        style={{
+          background: `radial-gradient(120px circle at 50% 0%, ${skill.color}22, transparent 70%)`,
+        }}
+      />
+      <div className="relative flex items-center gap-3">
+        <span
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-white/5 transition-transform duration-300 group-hover/skill:scale-110"
+          style={{ boxShadow: `0 0 0 1px rgba(255,255,255,0.06)` }}
+        >
+          <Icon className="h-5 w-5" style={{ color: skill.color }} />
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center justify-between">
+            <span className="truncate text-sm font-medium text-white/90">{skill.name}</span>
+            <span className="ml-2 text-[11px] text-muted">{skill.level}%</span>
+          </div>
+          <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-white/10">
+            <motion.span
+              className="block h-full rounded-full"
+              style={{
+                background: `linear-gradient(90deg, ${skill.color}, ${skill.color}99)`,
+              }}
+              initial={{ width: 0 }}
+              whileInView={{ width: `${skill.level}%` }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, ease: "easeOut" }}
+            />
+          </div>
+        </div>
       </div>
     </motion.div>
   );
+};
 
-  if (loading) {
-    return (
-      <section className="skills section" id="skills">
-        <div className="container">
-          <div className="section-title">
-            <h2>Skills & Technologies</h2>
-            <p>My technical expertise and proficiency levels</p>
-          </div>
-          <div className="loading">Loading skills...</div>
-        </div>
-      </section>
-    );
-  }
-
+const Skills = () => {
   return (
-    <section className="skills section" id="skills">
-      <div className="container">
-        <motion.div
-          className="section-title"
-          ref={ref}
-          initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-        >
-          <h2>Skills & Technologies</h2>
-          <p>My technical expertise and proficiency levels</p>
-        </motion.div>
+    <section id="skills" className="section-pad">
+      <div className="shell">
+        <SectionHeading
+          eyebrow="Skills"
+          title="My technical toolkit"
+          subtitle="Technologies and tools I use to design, build, deploy, and scale modern applications."
+        />
 
-        <div className="skills-content">
-          <motion.div
-            className="skills-category"
-            initial={{ opacity: 0, y: 50 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <h3>Frontend Development</h3>
-            <div className="skills-list">
-              {skills.frontend.map((skill, index) => (
-                <SkillBar key={skill.name} skill={skill} index={index} />
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.div
-            className="skills-category"
-            initial={{ opacity: 0, y: 50 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <h3>Backend Development</h3>
-            <div className="skills-list">
-              {skills.backend.map((skill, index) => (
-                <SkillBar key={skill.name} skill={skill} index={index} />
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.div
-            className="skills-category"
-            initial={{ opacity: 0, y: 50 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.6 }}
-          >
-            <h3>Tools & Technologies</h3>
-            <div className="skills-list">
-              {skills.tools.map((skill, index) => (
-                <SkillBar key={skill.name} skill={skill} index={index} />
-              ))}
-            </div>
-          </motion.div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {SKILL_CATEGORIES.map((category, i) => {
+            const Icon = category.icon;
+            return (
+              <motion.div
+                key={category.id}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.55, delay: (i % 3) * 0.1 }}
+              >
+                <SpotlightCard className="h-full p-6">
+                  <div className="mb-5 flex items-center gap-3">
+                    <span className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-accent/20 to-accent-secondary/20 text-accent-highlight ring-1 ring-inset ring-white/10">
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <h3 className="font-display text-lg font-semibold text-white">
+                      {category.title}
+                    </h3>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-1">
+                    {category.skills.map((skill) => (
+                      <SkillChip key={skill.name + category.id} skill={skill} />
+                    ))}
+                  </div>
+                </SpotlightCard>
+              </motion.div>
+            );
+          })}
         </div>
-
-        <motion.div
-          className="skills-summary"
-          initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.8 }}
-        >
-          <div className="summary-card">
-            <h4>Continuous Learning</h4>
-            <p>
-              I'm constantly expanding my skill set and staying updated with the
-              latest technologies. My passion for learning drives me to explore
-              new frameworks, tools, and methodologies to deliver the best
-              possible solutions.
-            </p>
-          </div>
-        </motion.div>
       </div>
     </section>
   );

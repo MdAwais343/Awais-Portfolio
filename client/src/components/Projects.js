@@ -1,380 +1,275 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { useInView } from "react-intersection-observer";
-import { FaGithub, FaExternalLinkAlt, FaStar } from "react-icons/fa";
+import React, { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import axios from "axios";
-import "./Projects.css";
+import { DEFAULT_PROJECTS } from "../data/portfolio";
+import SectionHeading from "./ui/SectionHeading";
+import Reveal from "./ui/Reveal";
 
-const Projects = () => {
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
-  const [projects, setProjects] = useState([
-    {
-      id: 1,
-      title: "Getir Clone",
-      description:
-        "Full-stack getir clone application with React, Node.js, and MongoDB. Features include user authentication, product management, shopping cart, and payment integration.",
-      technologies: [
-        "React",
-        "Node.js",
-        "MongoDB",
-        "Express",
-        "Stripe",
-        "Tailwind CSS",
-      ],
-      image: "/images/getir-clone.png",
-      github: "https://github.com/MdAwais343/Getir-Clone",
-      live: "https://getir-clone-silk.vercel.app/",
-      featured: true,
-    },
-    {
-      id: 2,
-      title: "NewsUpdate",
-      description:
-        "NewsUpdate is a news application that allows you to read news from different sources.",
-      technologies: [
-        "React",
-        "Node.js",
-        "MongoDB",
-        "NewsAPI",
-        "Express",
-        "Tailwind CSS",
-        "React Icons",
-        "React Router",
-      ],
-      image: "/images/NewsUpdate.png",
-      github: "https://github.com/MdAwais343/NewsUpdate",
-      live: "https://news-update-mauve.vercel.app/",
-      featured: true,
-    },
-    {
-      id: 3,
-      title: "TextStruct App",
-      description:
-        "Real-time text structure application with text analysis, text summarization, and text generation.",
-      technologies: [
-        "React",
-        "Chart.js",
-        "TextSummarization API",
-        "CSS3",
-        "Responsive Design",
-        "Tailwind CSS",
-        "Framer Motion",
-      ],
-      image: "/images/TextStruct.png",
-      github: "https://github.com/MdAwais343/textstruct",
-      live: "https://textstruct308.vercel.app/",
-      featured: false,
-    },
-    {
-      id: 4,
-      title: "Portfolio Website",
-      description:
-        "Personal portfolio website built with modern web technologies and responsive design.",
-      technologies: [
-        "React",
-        "Node.js",
-        "Express",
-        "CSS3",
-        "Responsive Design",
-        "Tailwind CSS",
-        "Framer Motion",
-      ],
-      image: "/images/Portfolio.png",
-      github: "https://github.com/MdAwais343/Awais-Portfolio",
-      live: "https://awais-portfolio-sage.vercel.app/",
-      featured: false,
-    },
-  ]);
-  const [filteredProjects, setFilteredProjects] = useState([
-    {
-      id: 1,
-      title: "Getir Clone",
-      description:
-        "Full-stack getir clone application with React, Node.js, and MongoDB. Features include user authentication, product management, shopping cart, and payment integration.",
-      technologies: [
-        "React",
-        "Node.js",
-        "MongoDB",
-        "Express",
-        "Stripe",
-        "Tailwind CSS",
-      ],
-      image: "/images/getir-clone.png",
-      github: "https://github.com/MdAwais343/Getir-Clone",
-      live: "https://getir-clone-silk.vercel.app/",
-      featured: true,
-    },
-    {
-      id: 2,
-      title: "NewsUpdate",
-      description:
-        "NewsUpdate is a news application that allows you to read news from different sources.",
-      technologies: [
-        "React",
-        "Node.js",
-        "MongoDB",
-        "NewsAPI",
-        "Express",
-        "Tailwind CSS",
-        "React Icons",
-        "React Router",
-      ],
-      image: "/images/NewsUpdate.png",
-      github: "https://github.com/MdAwais343/NewsUpdate",
-      live: "https://news-update-mauve.vercel.app/",
-      featured: true,
-    },
-    {
-      id: 3,
-      title: "TextStruct App",
-      description:
-        "Real-time text structure application with text analysis, text summarization, and text generation.",
-      technologies: [
-        "React",
-        "Chart.js",
-        "TextSummarization API",
-        "CSS3",
-        "Responsive Design",
-        "Tailwind CSS",
-        "Framer Motion",
-      ],
-      image: "/images/TextStruct.png",
-      github: "https://github.com/MdAwais343/textstruct",
-      live: "https://textstruct308.vercel.app/",
-      featured: false,
-    },
-    {
-      id: 4,
-      title: "Portfolio Website",
-      description:
-        "Personal portfolio website built with modern web technologies and responsive design.",
-      technologies: [
-        "React",
-        "Node.js",
-        "Express",
-        "CSS3",
-        "Responsive Design",
-        "Tailwind CSS",
-        "Framer Motion",
-      ],
-      image: "/images/Portfolio.png",
-      github: "https://github.com/MdAwais343/Awais-Portfolio",
-      live: "https://awais-portfolio-sage.vercel.app/",
-      featured: false,
-    },
-  ]);
-  const [activeFilter, setActiveFilter] = useState("all");
-  const [loading, setLoading] = useState(true);
+const AUTOPLAY_MS = 5500;
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await axios.get("/api/projects");
-        if (response.data && Array.isArray(response.data)) {
-          setProjects(response.data);
-          setFilteredProjects(response.data);
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-        // Use default data if API fails
-        setFilteredProjects(projects);
-        setLoading(false);
-      }
-    };
+const slideVariants = {
+  enter: (direction) => ({
+    x: direction > 0 ? 320 : -320,
+    opacity: 0,
+    scale: 0.94,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+  },
+  exit: (direction) => ({
+    x: direction > 0 ? -320 : 320,
+    opacity: 0,
+    scale: 0.94,
+    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
 
-    fetchProjects();
-  }, [projects]);
-
-  const filters = [
-    { id: "all", label: "All Projects" },
-    { id: "featured", label: "Featured" },
-    { id: "frontend", label: "Frontend" },
-    { id: "fullstack", label: "Full Stack" },
-  ];
-
-  const handleFilter = (filterId) => {
-    setActiveFilter(filterId);
-
-    if (filterId === "all") {
-      setFilteredProjects(projects);
-    } else if (filterId === "featured") {
-      setFilteredProjects(projects.filter((project) => project.featured));
-    } else if (filterId === "frontend") {
-      setFilteredProjects(
-        projects.filter((project) =>
-          project.technologies.some((tech) =>
-            ["React", "Vue", "Angular", "HTML", "CSS", "JavaScript"].includes(
-              tech
-            )
-          )
-        )
-      );
-    } else if (filterId === "fullstack") {
-      setFilteredProjects(
-        projects.filter((project) =>
-          project.technologies.some((tech) =>
-            [
-              "Node.js",
-              "Express",
-              "MongoDB",
-              "PostgreSQL",
-              "Python",
-              "Django",
-            ].includes(tech)
-          )
-        )
-      );
-    }
-  };
-
-  if (loading) {
-    return (
-      <section className="projects section" id="projects">
-        <div className="container">
-          <div className="section-title">
-            <h2>My Projects</h2>
-            <p>Showcasing my latest work and achievements</p>
-          </div>
-          <div className="loading">Loading projects...</div>
-        </div>
-      </section>
-    );
-  }
+const ProjectSlide = ({ project, index, total }) => {
+  const num = String(index + 1).padStart(2, "0");
 
   return (
-    <section className="projects section" id="projects">
-      <div className="container">
-        <motion.div
-          className="section-title"
-          ref={ref}
-          initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
+    <article className="flex h-full flex-col overflow-hidden rounded-3xl glass lg:flex-row">
+      {/* Image */}
+      <div className="relative aspect-[16/10] shrink-0 overflow-hidden lg:aspect-auto lg:w-[48%]">
+        <img
+          src={project.image}
+          alt={project.title}
+          loading="lazy"
+          className="h-full w-full object-cover object-top"
+          onError={(e) => {
+            e.target.style.display = "none";
+            if (e.target.nextSibling) e.target.nextSibling.style.display = "flex";
+          }}
+        />
+        <div
+          className="hidden h-full min-h-[220px] w-full items-center justify-center bg-gradient-to-br from-accent/30 to-accent-secondary/30"
+          style={{ display: "none" }}
         >
-          <h2>My Projects</h2>
-          <p>Showcasing my latest work and achievements</p>
-        </motion.div>
+          <span className="font-display text-5xl font-bold text-white/80">
+            {project.title.charAt(0)}
+          </span>
+        </div>
+
+        <div className="absolute inset-0 bg-gradient-to-t from-bg/80 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-bg/60" />
+
+        <span className="absolute right-4 top-4 font-mono text-xs font-medium tracking-widest text-white/40">
+          {num} / {String(total).padStart(2, "0")}
+        </span>
+      </div>
+
+      {/* Content */}
+      <div className="flex flex-1 flex-col p-6 sm:p-8">
+        <motion.h3
+          key={`title-${project.id}`}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.4 }}
+          className="font-display text-2xl font-semibold text-white sm:text-3xl"
+        >
+          {project.title}
+        </motion.h3>
+
+        <motion.p
+          key={`desc-${project.id}`}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.22, duration: 0.4 }}
+          className="mt-3 line-clamp-4 text-sm leading-relaxed text-muted sm:text-base"
+        >
+          {project.description}
+        </motion.p>
 
         <motion.div
-          className="project-filters"
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          key={`tech-${project.id}`}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.4 }}
+          className="mt-5 flex flex-wrap gap-2"
         >
-          {filters.map((filter) => (
-            <motion.button
-              key={filter.id}
-              className={`filter-btn ${
-                activeFilter === filter.id ? "active" : ""
-              }`}
-              onClick={() => handleFilter(filter.id)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+          {project.technologies.map((tech) => (
+            <span
+              key={tech}
+              className="rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-white/70"
             >
-              {filter.label}
-            </motion.button>
+              {tech}
+            </span>
           ))}
         </motion.div>
 
         <motion.div
-          className="projects-grid"
-          initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          key={`links-${project.id}`}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.38, duration: 0.4 }}
+          className="mt-auto flex flex-wrap items-center gap-4 pt-8"
         >
-          {filteredProjects.map((project, index) => (
-            <motion.div
-              key={project.id}
-              className="project-card"
-              initial={{ opacity: 0, y: 50 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
-              whileHover={{ y: -10 }}
+          {project.live && (
+            <a
+              href={project.live}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group/link inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-accent to-accent-secondary px-6 py-2.5 text-sm font-semibold text-white shadow-glow transition-transform duration-200 hover:scale-105"
             >
-              <div className="project-image">
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="project-img"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                    e.target.nextSibling.style.display = "flex";
-                  }}
-                />
-                <div
-                  className="project-placeholder"
-                  style={{ display: "none" }}
-                >
-                  <span>{project.title.charAt(0)}</span>
-                </div>
-                {project.featured && (
-                  <div className="featured-badge">
-                    <FaStar />
-                    Featured
-                  </div>
-                )}
-              </div>
-
-              <div className="project-content">
-                <h3>{project.title}</h3>
-                <p>{project.description}</p>
-
-                <div className="project-technologies">
-                  {project.technologies.slice(0, 4).map((tech, techIndex) => (
-                    <span key={techIndex} className="tech-tag">
-                      {tech}
-                    </span>
-                  ))}
-                  {project.technologies.length > 4 && (
-                    <span className="tech-tag more">
-                      +{project.technologies.length - 4}
-                    </span>
-                  )}
-                </div>
-
-                <div className="project-links">
-                  <motion.a
-                    href={project.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="project-link github"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <FaGithub />
-                    Code
-                  </motion.a>
-                  <motion.a
-                    href={project.live}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="project-link live"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <FaExternalLinkAlt />
-                    Live Demo
-                  </motion.a>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+              Live Demo
+              <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
+            </a>
+          )}
         </motion.div>
+      </div>
+    </article>
+  );
+};
 
-        {filteredProjects.length === 0 && (
-          <motion.div
-            className="no-projects"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
+const Projects = () => {
+  const [projects, setProjects] = useState(DEFAULT_PROJECTS);
+  const [current, setCurrent] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    axios
+      .get("/api/projects")
+      .then((res) => {
+        if (active && Array.isArray(res.data) && res.data.length) {
+          setProjects(res.data);
+        }
+      })
+      .catch(() => {
+        /* keep default data if API fails */
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const paginate = useCallback(
+    (newDirection) => {
+      setDirection(newDirection);
+      setCurrent((prev) => {
+        const next = prev + newDirection;
+        if (next < 0) return projects.length - 1;
+        if (next >= projects.length) return 0;
+        return next;
+      });
+    },
+    [projects.length]
+  );
+
+  const goTo = (index) => {
+    setDirection(index > current ? 1 : -1);
+    setCurrent(index);
+  };
+
+  useEffect(() => {
+    if (paused || projects.length <= 1) return;
+    const timer = setInterval(() => paginate(1), AUTOPLAY_MS);
+    return () => clearInterval(timer);
+  }, [paused, paginate, projects.length, current]);
+
+  if (!projects.length) return null;
+
+  return (
+    <section id="projects" className="section-pad">
+      <div className="shell">
+        <Reveal>
+          <SectionHeading
+            eyebrow="Projects"
+            title="Selected work"
+            subtitle="A showcase of products I've designed and built — from full-stack apps to polished frontends."
+          />
+        </Reveal>
+
+        <Reveal delay={0.1}>
+          <div
+            className="relative"
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
           >
-            <p>No projects found for the selected filter.</p>
-          </motion.div>
-        )}
+            {/* Carousel viewport */}
+            <div className="relative min-h-[480px] overflow-hidden sm:min-h-[420px] lg:min-h-[380px]">
+              <AnimatePresence initial={false} custom={direction} mode="wait">
+                <motion.div
+                  key={projects[current].id}
+                  custom={direction}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  className="absolute inset-0"
+                >
+                  <ProjectSlide
+                    project={projects[current]}
+                    index={current}
+                    total={projects.length}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Navigation arrows */}
+            {projects.length > 1 && (
+              <>
+                <button
+                  onClick={() => paginate(-1)}
+                  aria-label="Previous project"
+                  className="absolute -left-2 top-1/2 z-10 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/10 bg-bg/80 text-white backdrop-blur transition-all duration-200 hover:border-accent/40 hover:bg-accent/20 sm:-left-5 sm:h-12 sm:w-12"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => paginate(1)}
+                  aria-label="Next project"
+                  className="absolute -right-2 top-1/2 z-10 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/10 bg-bg/80 text-white backdrop-blur transition-all duration-200 hover:border-accent/40 hover:bg-accent/20 sm:-right-5 sm:h-12 sm:w-12"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </>
+            )}
+
+            {/* Dots + progress */}
+            {projects.length > 1 && (
+              <div className="mt-8 flex flex-col items-center gap-4">
+                <div className="flex items-center gap-2">
+                  {projects.map((project, i) => (
+                    <button
+                      key={project.id}
+                      onClick={() => goTo(i)}
+                      aria-label={`Go to project ${i + 1}`}
+                      className="group relative h-2 overflow-hidden rounded-full transition-all duration-300"
+                      style={{ width: i === current ? 40 : 8 }}
+                    >
+                      <span className="absolute inset-0 rounded-full bg-white/15" />
+                      {i === current && (
+                        <motion.span
+                          layoutId="project-dot-active"
+                          className="absolute inset-0 rounded-full bg-gradient-to-r from-accent to-accent-secondary"
+                        />
+                      )}
+                      {!paused && i === current && (
+                        <motion.span
+                          key={`progress-${current}`}
+                          className="absolute inset-y-0 left-0 rounded-full bg-white/30"
+                          initial={{ width: "0%" }}
+                          animate={{ width: "100%" }}
+                          transition={{ duration: AUTOPLAY_MS / 1000, ease: "linear" }}
+                        />
+                      )}
+                    </button>
+                  ))}
+                </div>
+
+                <p className="text-xs text-muted">
+                  {projects[current].title}
+                </p>
+              </div>
+            )}
+          </div>
+        </Reveal>
       </div>
     </section>
   );

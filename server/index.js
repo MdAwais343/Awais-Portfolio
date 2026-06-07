@@ -7,7 +7,7 @@ const path = require("path");
 require("dotenv").config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 // Middleware
 app.use(helmet());
@@ -79,43 +79,58 @@ app.post("/api/contact", async (req, res) => {
 app.get("/api/projects", (req, res) => {
   const projects = [
     {
-      id: 1,
-      title: "Getir Clone",
+      id: 5,
+      title: "SMN Online — Enterprise News & Media Platform",
       description:
-        "Full-stack getir clone application with React, Node.js, and MongoDB. Features include user authentication, product management, shopping cart, and payment integration.",
+        "Scalable digital publishing ecosystem featuring real-time news delivery, multimedia content management, push notifications, and advanced administration tools. Developed and maintained production-grade features for a high-traffic news platform with live streaming and broadcasting, focusing on content management, backend services, notification workflows, and performance optimization. Worked across the full stack to deliver reliable, scalable, and user-friendly publishing experiences.",
       technologies: [
         "React",
-        "Node.js",
-        "MongoDB",
-        "Express",
+        "Django",
+        "PostgreSQL",
+        "Firebase",
+        "AWS",
+        "CI/CD",
         "Stripe",
-        "Tailwind CSS",
+        "PayPal",
       ],
-      image: "/images/getir-clone.png",
-      github: "https://github.com/MdAwais343/Getir-Clone",
-      live: "https://getir-clone-silk.vercel.app/",
-      featured: true,
+      image: "/images/smn-online.png",
+      live: "https://smn-online.com/",
     },
     {
-      id: 2,
-      title: "NewsUpdate",
+      id: 6,
+      title: "Bitesy — Smart Food Ordering & Restaurant Platform",
       description:
-        "NewsUpdate is a news application that allows you to read news from different sources.",
+        "End-to-end food ordering system with restaurant management, real-time order tracking, digital menu control, and seamless customer checkout experience. Built and contributed to a production-grade food ordering platform designed for restaurants and customers to manage orders efficiently in real time. Worked across backend APIs, order processing workflows, payment integration, and restaurant dashboard features. Focused on performance optimization, scalable architecture, and smooth user experience across web and mobile.",
       technologies: [
         "React",
         "Node.js",
-        "MongoDB",
-        "NewsAPI",
         "Express",
-        "Tailwind CSS",
-        "React Icons",
-        "React Router",
-        "React Icons",
+        "PostgreSQL",
+        "Firebase",
+        "Stripe",
+        "AWS",
+        "CI/CD",
       ],
-      image: "/images/NewsUpdate.png",
-      github: "https://github.com/MdAwais343/NewsUpdate",
-      live: "https://news-update-mauve.vercel.app/",
-      featured: true,
+      image: "/images/bitesy.png",
+      live: "https://bitesy.net/"
+    },
+    {
+      id: 1,
+      title: "Ojiyo — Smart Marketplace Platform",
+      description:
+        "Multi-vendor e-commerce ecosystem with social commerce, live chat, wallet, service booking, and real-time order tracking. Built and maintained a production-grade marketplace platform combining e-commerce, service booking, social engagement, and real-time communication. Contributed across the full stack, including backend APIs, payment integration, vendor management, chat systems, and scalable database architecture.",
+      technologies: [
+        "React Native",
+        "React",
+        "Node.js",
+        "Express",
+        "PostgreSQL",
+        "Firebase",
+        "Stripe",
+        "AWS",
+      ],
+      image: "/images/ojiyo.png",
+      live: "https://ojiyo.ai/",
     },
     {
       id: 3,
@@ -134,7 +149,23 @@ app.get("/api/projects", (req, res) => {
       image: "/images/TextStruct.png",
       github: "https://github.com/MdAwais343/textstruct",
       live: "https://textstruct308.vercel.app/",
-      featured: false,
+    },
+    {
+      id: 3,
+      title: "Getir Clone",
+      description:
+        "Full-stack getir clone application with React, Node.js, and MongoDB. Features include user authentication, product management, shopping cart, and payment integration.",
+      technologies: [
+        "React",
+        "Node.js",
+        "MongoDB",
+        "Express",
+        "Stripe",
+        "Tailwind CSS",
+      ],
+      image: "/images/getir-clone.png",
+      github: "https://github.com/MdAwais343/Getir-Clone",
+      live: "https://getir-clone-silk.vercel.app/",
     },
     {
       id: 4,
@@ -153,7 +184,6 @@ app.get("/api/projects", (req, res) => {
       image: "/images/Portfolio.png",
       github: "https://github.com/MdAwais343/Awais-Portfolio",
       live: "https://awais-portfolio-sage.vercel.app/",
-      featured: false,
     },
   ];
 
@@ -190,8 +220,8 @@ app.get("/api/experience", (req, res) => {
   const experience = [
     {
       id: 1,
-      company: "SortUP Inc.",
-      position: "Frontend Software Engineer",
+      company: "Sortup.Dev",
+      position: "Full Stack Developer",
       duration: "2025 - Present",
       description:
         "Leading development of enterprise applications, mentoring junior developers, and implementing best practices for scalable software solutions.",
@@ -208,11 +238,11 @@ app.get("/api/experience", (req, res) => {
     // },
     {
       id: 2,
-      company: "StartupXYZ",
+      company: "Upwork-Freelancing",
       position: "Frontend Developer",
       duration: "2023 - 2025",
       description:
-        "Built responsive user interfaces, optimized application performance, and worked closely with designers to implement pixel-perfect designs.",
+        "Freelancing as a frontend developer, building responsive user interfaces and optimizing application performance.",
       technologies: ["React", "JavaScript", "CSS3", "HTML5", "Git"],
     },
   ];
@@ -231,16 +261,8 @@ app.get("/api/education", (req, res) => {
       description:
         "Graduated with honors. Specialized in software engineering and web development.",
       gpa: "3.5/4.0",
-    },
-    {
-      id: 2,
-      degree: "Full Stack Web Development",
-      institution: "Coursera",
-      duration: "2022",
-      description:
-        "Intensive 12-week program covering modern web development technologies and best practices.",
-      gpa: "N/A",
-    },
+    }
+
   ];
 
   res.json(education);

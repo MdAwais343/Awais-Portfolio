@@ -1,155 +1,81 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useInView } from "react-intersection-observer";
-import { FaGraduationCap, FaCalendarAlt, FaUniversity } from "react-icons/fa";
+import { GraduationCap, Calendar, Building2, Award } from "lucide-react";
 import axios from "axios";
-import "./Education.css";
+import { DEFAULT_EDUCATION } from "../data/portfolio";
+import SectionHeading from "./ui/SectionHeading";
+import SpotlightCard from "./ui/SpotlightCard";
 
 const Education = () => {
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
-  const [education, setEducation] = useState([
-    {
-      id: 1,
-      degree: "Bachelor of Science in Computer Science",
-      institution: "University of Technology",
-      duration: "2019 - 2023",
-      gpa: "3.8/4.0",
-      description:
-        "Focused on software engineering, data structures, algorithms, and web development. Completed several projects including a full-stack e-commerce application.",
-    },
-    {
-      id: 2,
-      degree: "Full Stack Web Development",
-      institution: "Online Coding Bootcamp",
-      duration: "2022",
-      description:
-        "Intensive program covering modern web development technologies including React, Node.js, and database management.",
-    },
-  ]);
-  const [loading, setLoading] = useState(true);
+  const [education, setEducation] = useState(DEFAULT_EDUCATION);
 
   useEffect(() => {
-    const fetchEducation = async () => {
-      try {
-        const response = await axios.get("/api/education");
-        if (response.data && Array.isArray(response.data)) {
-          setEducation(response.data);
+    let active = true;
+    axios
+      .get("/api/education")
+      .then((res) => {
+        if (active && Array.isArray(res.data) && res.data.length) {
+          setEducation(res.data);
         }
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching education:", error);
-        // Keep default data if API fails
-        setLoading(false);
-      }
+      })
+      .catch(() => {
+        /* keep default data if API fails */
+      });
+    return () => {
+      active = false;
     };
-
-    fetchEducation();
   }, []);
 
-  if (loading) {
-    return (
-      <section className="education section" id="education">
-        <div className="container">
-          <div className="section-title">
-            <h2>Education</h2>
-            <p>My academic background and qualifications</p>
-          </div>
-          <div className="loading">Loading education...</div>
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <section className="education section" id="education">
-      <div className="container">
-        <motion.div
-          className="section-title"
-          ref={ref}
-          initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-        >
-          <h2>Education</h2>
-          <p>My academic background and qualifications</p>
-        </motion.div>
+    <section id="education" className="section-pad">
+      <div className="shell">
+        <SectionHeading
+          eyebrow="Education"
+          title="Academic background"
+          subtitle="The foundation of my technical expertise and commitment to lifelong learning."
+        />
 
-        <div className="education-grid">
+        <div className="items-center justify-center flex">
           {education.map((edu, index) => (
             <motion.div
-              key={edu.id}
-              className="education-card"
-              initial={{ opacity: 0, y: 50 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-              whileHover={{ y: -10 }}
+              key={edu.id ?? index}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.55, delay: index * 0.1 }}
             >
-              <div className="education-header">
-                <div className="education-icon">
-                  <FaGraduationCap />
-                </div>
-                <div className="education-info">
-                  <h3>{edu.degree}</h3>
-                  <h4>
-                    <FaUniversity />
-                    {edu.institution}
-                  </h4>
-                  <div className="education-meta">
-                    <span className="education-duration">
-                      <FaCalendarAlt />
-                      {edu.duration}
-                    </span>
-                    {edu.gpa && (
-                      <span className="education-gpa">GPA: {edu.gpa}</span>
-                    )}
+              <SpotlightCard className="h-full p-7 flex items-center justify-center">
+                <div className="flex items-start gap-4">
+                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-accent/25 to-accent-secondary/25 text-accent-highlight ring-1 ring-inset ring-white/10">
+                    <GraduationCap className="h-6 w-6" />
+                  </span>
+                  <div className="min-w-0">
+                    <h3 className="font-display text-lg font-semibold text-white">{edu.degree}</h3>
+                    <p className="mt-1 inline-flex items-center gap-2 text-sm font-medium text-accent">
+                      <Building2 className="h-4 w-4" />
+                      {edu.institution}
+                    </p>
                   </div>
                 </div>
-              </div>
 
-              <div className="education-description">
-                <p>{edu.description}</p>
-              </div>
+                <div className="mt-5 flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-muted">
+                    <Calendar className="h-3.5 w-3.5" />
+                    {edu.duration}
+                  </span>
+                  {edu.gpa && edu.gpa !== "N/A" && (
+                    <span className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-medium text-accent-highlight">
+                      <Award className="h-3.5 w-3.5" />
+                      GPA: {edu.gpa}
+                    </span>
+                  )}
+                </div>
+
+                <p className="mt-5 text-sm leading-relaxed text-muted">{edu.description}</p>
+              </SpotlightCard>
             </motion.div>
           ))}
         </div>
-
-        <motion.div
-          className="education-summary"
-          initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.8 }}
-        >
-          <div className="summary-content">
-            <h3>Continuous Learning</h3>
-            <p>
-              My educational journey has been the foundation of my technical
-              expertise. I believe in lifelong learning and continuously seek
-              opportunities to expand my knowledge through courses,
-              certifications, and hands-on projects.
-            </p>
-            <div className="learning-highlights">
-              <div className="highlight-item">
-                <span className="highlight-icon">🎓</span>
-                <span className="highlight-text">Formal Education</span>
-              </div>
-              <div className="highlight-item">
-                <span className="highlight-icon">💻</span>
-                <span className="highlight-text">Online Courses</span>
-              </div>
-              <div className="highlight-item">
-                <span className="highlight-icon">📚</span>
-                <span className="highlight-text">Self-Study</span>
-              </div>
-              <div className="highlight-item">
-                <span className="highlight-icon">🔧</span>
-                <span className="highlight-text">Practical Projects</span>
-              </div>
-            </div>
-          </div>
-        </motion.div>
       </div>
     </section>
   );

@@ -1,156 +1,110 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useInView } from "react-intersection-observer";
-import { FaBriefcase, FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa";
+import { Briefcase, Calendar } from "lucide-react";
 import axios from "axios";
-import "./Experience.css";
+import { DEFAULT_EXPERIENCE } from "../data/portfolio";
+import SectionHeading from "./ui/SectionHeading";
 
-const Experience = () => {
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
-  const [experience, setExperience] = useState([
-    {
-      id: 1,
-      position: "Software Engineer",
-      company: "Tech Solutions Inc.",
-      duration: "2023 - Present",
-      description:
-        "Developing and maintaining web applications using modern technologies. Leading a team of 3 developers and implementing best practices for code quality and performance.",
-      technologies: ["React", "Node.js", "MongoDB", "AWS", "Docker"],
-    },
-    {
-      id: 2,
-      position: "Frontend Developer",
-      company: "Digital Agency",
-      duration: "2022 - 2023",
-      description:
-        "Created responsive and interactive user interfaces for various clients. Collaborated with design teams to implement pixel-perfect designs and optimize user experience.",
-      technologies: ["React", "JavaScript", "CSS3", "HTML5", "Figma"],
-    },
-  ]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchExperience = async () => {
-      try {
-        const response = await axios.get("/api/experience");
-        if (response.data && Array.isArray(response.data)) {
-          setExperience(response.data);
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching experience:", error);
-        // Keep default data if API fails
-        setLoading(false);
-      }
-    };
-
-    fetchExperience();
-  }, []);
-
-  if (loading) {
-    return (
-      <section className="experience section" id="experience">
-        <div className="container">
-          <div className="section-title">
-            <h2>Work Experience</h2>
-            <p>My professional journey and career highlights</p>
-          </div>
-          <div className="loading">Loading experience...</div>
-        </div>
-      </section>
-    );
-  }
-
+const TimelineItem = ({ exp, index }) => {
+  const isLeft = index % 2 === 0;
   return (
-    <section className="experience section" id="experience">
-      <div className="container">
-        <motion.div
-          className="section-title"
-          ref={ref}
-          initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-        >
-          <h2>Work Experience</h2>
-          <p>My professional journey and career highlights</p>
-        </motion.div>
+    <div className="relative md:grid md:grid-cols-2 md:gap-8">
+      {/* Node on the line */}
+      <span className="absolute left-4 top-6 z-10 grid h-4 w-4 -translate-x-1/2 place-items-center md:left-1/2">
+        <span className="absolute h-4 w-4 animate-pulse-glow rounded-full bg-accent/40" />
+        <span className="h-2.5 w-2.5 rounded-full bg-accent shadow-glow" />
+      </span>
 
-        <div className="experience-timeline">
-          {experience.map((exp, index) => (
-            <motion.div
-              key={exp.id}
-              className={`timeline-item ${index % 2 === 0 ? "left" : "right"}`}
-              initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-            >
-              <div className="timeline-content">
-                <div className="timeline-header">
-                  <div className="timeline-icon">
-                    <FaBriefcase />
-                  </div>
-                  <div className="timeline-info">
-                    <h3>{exp.position}</h3>
-                    <h4>{exp.company}</h4>
-                    <div className="timeline-meta">
-                      <span className="timeline-duration">
-                        <FaCalendarAlt />
-                        {exp.duration}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="timeline-description">
-                  <p>{exp.description}</p>
-                </div>
-
-                <div className="timeline-technologies">
-                  {exp.technologies.map((tech, techIndex) => (
-                    <span key={techIndex} className="tech-badge">
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        <motion.div
-          className="experience-summary"
-          initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.8 }}
-        >
-          <div className="summary-content">
-            <h3>Career Growth</h3>
-            <p>
-              Throughout my career, I've consistently taken on new challenges
-              and responsibilities, growing from a Frontend Developer to a
-              Senior Software Engineer. Each role has taught me valuable lessons
-              about teamwork, problem-solving, and delivering high-quality
-              software.
-            </p>
-            <div className="career-highlights">
-              <div className="highlight-item">
-                <span className="highlight-number">1+</span>
-                <span className="highlight-label">Years Experience</span>
-              </div>
-              <div className="highlight-item">
-                <span className="highlight-number">2</span>
-                <span className="highlight-label">Companies</span>
-              </div>
-              <div className="highlight-item">
-                <span className="highlight-number">4+</span>
-                <span className="highlight-label">Projects Led</span>
-              </div>
+      <motion.div
+        initial={{ opacity: 0, x: isLeft ? -40 : 40, y: 20 }}
+        whileInView={{ opacity: 1, x: 0, y: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className={`ml-12 md:ml-0 ${
+          isLeft ? "md:col-start-1 md:pr-4 md:text-right" : "md:col-start-2 md:pl-4"
+        }`}
+      >
+        <div className="group rounded-2xl glass p-6 transition-colors duration-300 hover:border-accent/40">
+          <div
+            className={`flex items-center gap-3 ${
+              isLeft ? "md:flex-row-reverse md:text-right" : ""
+            }`}
+          >
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-accent/25 to-accent-secondary/25 text-accent-highlight ring-1 ring-inset ring-white/10">
+              <Briefcase className="h-5 w-5" />
+            </span>
+            <div>
+              <h3 className="font-display text-lg font-semibold text-white">{exp.position}</h3>
+              <p className="text-sm font-medium text-accent">{exp.company}</p>
             </div>
           </div>
-        </motion.div>
+
+          <div
+            className={`mt-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-muted ${
+              isLeft ? "md:ml-auto" : ""
+            }`}
+          >
+            <Calendar className="h-3.5 w-3.5" />
+            {exp.duration}
+          </div>
+
+          <p className="mt-4 text-sm leading-relaxed text-muted">{exp.description}</p>
+
+          <div className={`mt-5 flex flex-wrap gap-2 ${isLeft ? "md:justify-end" : ""}`}>
+            {exp.technologies.map((tech) => (
+              <span
+                key={tech}
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-white/70"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+const Experience = () => {
+  const [experience, setExperience] = useState(DEFAULT_EXPERIENCE);
+
+  useEffect(() => {
+    let active = true;
+    axios
+      .get("/api/experience")
+      .then((res) => {
+        if (active && Array.isArray(res.data) && res.data.length) {
+          setExperience(res.data);
+        }
+      })
+      .catch(() => {
+        /* keep default data if API fails */
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  return (
+    <section id="experience" className="section-pad">
+      <div className="shell">
+        <SectionHeading
+          eyebrow="Experience"
+          title="My professional journey"
+          subtitle="A timeline of the roles where I've grown as an engineer and shipped real products."
+        />
+
+        <div className="relative mx-auto max-w-4xl">
+          {/* vertical line */}
+          <div className="absolute left-4 top-0 h-full w-px bg-gradient-to-b from-accent/60 via-accent-secondary/40 to-transparent md:left-1/2 md:-translate-x-1/2" />
+
+          <div className="flex flex-col gap-10">
+            {experience.map((exp, index) => (
+              <TimelineItem key={exp.id ?? index} exp={exp} index={index} />
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
