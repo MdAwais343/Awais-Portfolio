@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, MapPin, Github, Linkedin, MessageCircle, Send, CheckCircle2, AlertCircle } from "lucide-react";
-import axios from "axios";
+import api from "../api/client";
 import { PROFILE, SOCIALS } from "../data/portfolio";
 import SectionHeading from "./ui/SectionHeading";
 import Reveal from "./ui/Reveal";
@@ -50,7 +50,7 @@ const Contact = () => {
     setLoading(true);
     setSubmitStatus(null);
     try {
-      const response = await axios.post("/api/contact", formData);
+      const response = await api.post("/api/contact", formData);
       if (response.data.success) {
         setSubmitStatus({ type: "success", message: response.data.message });
         setFormData({ name: "", email: "", subject: "", message: "" });

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
-import axios from "axios";
+import api from "../api/client";
 import { DEFAULT_PROJECTS } from "../data/portfolio";
 import SectionHeading from "./ui/SectionHeading";
 import Reveal from "./ui/Reveal";
@@ -132,7 +132,7 @@ const Projects = () => {
 
   useEffect(() => {
     let active = true;
-    axios
+    api
       .get("/api/projects")
       .then((res) => {
         if (active && Array.isArray(res.data) && res.data.length) {

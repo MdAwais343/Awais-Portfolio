@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Briefcase, Calendar } from "lucide-react";
-import axios from "axios";
+import api from "../api/client";
 import { DEFAULT_EXPERIENCE } from "../data/portfolio";
 import SectionHeading from "./ui/SectionHeading";
 
@@ -71,7 +71,7 @@ const Experience = () => {
 
   useEffect(() => {
     let active = true;
-    axios
+    api
       .get("/api/experience")
       .then((res) => {
         if (active && Array.isArray(res.data) && res.data.length) {

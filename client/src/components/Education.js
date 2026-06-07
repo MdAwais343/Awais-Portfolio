@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { GraduationCap, Calendar, Building2, Award } from "lucide-react";
-import axios from "axios";
+import api from "../api/client";
 import { DEFAULT_EDUCATION } from "../data/portfolio";
 import SectionHeading from "./ui/SectionHeading";
 import SpotlightCard from "./ui/SpotlightCard";
@@ -11,7 +11,7 @@ const Education = () => {
 
   useEffect(() => {
     let active = true;
-    axios
+    api
       .get("/api/education")
       .then((res) => {
         if (active && Array.isArray(res.data) && res.data.length) {
