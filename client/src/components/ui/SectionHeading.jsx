@@ -27,6 +27,14 @@ const SectionHeading = ({ eyebrow, title, subtitle, align = "center" }) => {
       >
         {title}
       </motion.h2>
+      <motion.span
+        aria-hidden
+        initial={{ scaleX: 0, opacity: 0 }}
+        whileInView={{ scaleX: 1, opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+        className="-mt-1 h-[3px] w-16 rounded-full bg-gradient-to-r from-accent via-accent-secondary to-accent-warm"
+      />
       {subtitle && (
         <motion.p
           initial={{ opacity: 0, y: 20 }}

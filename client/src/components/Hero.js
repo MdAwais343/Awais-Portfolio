@@ -1,8 +1,26 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowDown, Download, Github, Linkedin, Twitter, Sparkles } from "lucide-react";
+import {
+  SiReact,
+  SiNodedotjs,
+  SiDjango,
+  SiPostgresql,
+  SiAmazonaws,
+  SiDocker,
+} from "react-icons/si";
 import { PROFILE, SOCIALS, ROTATING_TITLES } from "../data/portfolio";
 import MagneticButton from "./ui/MagneticButton";
+
+// Badges that orbit the profile photo (angle in degrees, 0 = top)
+const ORBIT_TECH = [
+  { name: "React", Icon: SiReact, color: "#61DAFB", angle: 0 },
+  { name: "Node.js", Icon: SiNodedotjs, color: "#5FA04E", angle: 60 },
+  { name: "Django", Icon: SiDjango, color: "#0C9D58", angle: 120 },
+  { name: "PostgreSQL", Icon: SiPostgresql, color: "#4169E1", angle: 180 },
+  { name: "AWS", Icon: SiAmazonaws, color: "#FF9900", angle: 240 },
+  { name: "Docker", Icon: SiDocker, color: "#2496ED", angle: 300 },
+];
 
 const useTypingEffect = (words, { typeSpeed = 90, deleteSpeed = 45, pause = 1600 } = {}) => {
   const [index, setIndex] = useState(0);
@@ -40,14 +58,38 @@ const useTypingEffect = (words, { typeSpeed = 90, deleteSpeed = 45, pause = 1600
   return text;
 };
 
-const FloatingShape = ({ className, children, delay = 0 }) => (
-  <motion.div
-    className={`absolute hidden md:block ${className}`}
-    animate={{ y: [0, -18, 0], rotate: [0, 8, 0] }}
-    transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay }}
+const OrbitRing = () => (
+  <div
+    aria-hidden
+    className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
   >
-    {children}
-  </motion.div>
+    <div className="relative h-[19.5rem] w-[19.5rem] animate-orbit sm:h-[26.5rem] sm:w-[26.5rem]">
+      <div className="absolute inset-0 rounded-full border border-dashed border-white/15" />
+      {ORBIT_TECH.map(({ name, Icon, color, angle }) => {
+        const rad = (angle * Math.PI) / 180;
+        return (
+          <div
+            key={name}
+            className="absolute -translate-x-1/2 -translate-y-1/2"
+            style={{
+              left: `${50 + 50 * Math.sin(rad)}%`,
+              top: `${50 - 50 * Math.cos(rad)}%`,
+            }}
+          >
+            {/* counter-rotate so the icon stays upright while the ring spins */}
+            <div className="animate-orbit-reverse">
+              <span
+                className="grid h-11 w-11 place-items-center rounded-xl border border-white/15 bg-bg/70 backdrop-blur-md sm:h-12 sm:w-12"
+                style={{ boxShadow: `0 0 24px -4px ${color}66` }}
+              >
+                <Icon className="h-5 w-5 sm:h-6 sm:w-6" style={{ color }} />
+              </span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
 );
 
 const Hero = () => {
@@ -97,7 +139,10 @@ const Hero = () => {
             className="mt-6 font-display text-4xl font-bold leading-[1.05] tracking-tight text-white sm:text-6xl lg:text-7xl"
           >
             Hi, I'm <br className="hidden sm:block" />
-            <span className="gradient-text text-glow">{PROFILE.name}</span>
+            {/* glow lives on a wrapper: text-shadow on clipped gradient text muddies the fill */}
+            <span className="inline-block pb-2 drop-shadow-[0_0_32px_rgba(79,140,255,0.4)]">
+              <span className="gradient-text-animated">{PROFILE.name}</span>
+            </span>
           </motion.h1>
 
           <motion.div
@@ -158,21 +203,12 @@ const Hero = () => {
           transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           className="relative order-1 mx-auto flex w-full max-w-sm justify-center lg:order-2"
         >
-          <FloatingShape className="-left-2 top-6" delay={0}>
-            <div className="h-16 w-16 rounded-2xl border border-white/15 bg-white/5 backdrop-blur" />
-          </FloatingShape>
-          <FloatingShape className="right-2 top-1/4" delay={1.2}>
-            <div className="h-10 w-10 rotate-45 rounded-lg bg-gradient-to-br from-accent to-accent-secondary opacity-80" />
-          </FloatingShape>
-          <FloatingShape className="bottom-8 left-4" delay={2}>
-            <div className="h-12 w-12 rounded-full border border-accent-highlight/40 bg-accent-highlight/10 backdrop-blur" />
-          </FloatingShape>
-
-          <div className="relative">
+          <div className="relative py-10 sm:py-12">
+            <OrbitRing />
             {/* glow rings */}
-            <div className="absolute -inset-6 rounded-full bg-gradient-to-tr from-accent/30 via-accent-secondary/20 to-accent-highlight/30 blur-2xl" />
-            <div className="absolute -inset-3 animate-spin-slow rounded-full bg-[conic-gradient(from_0deg,rgba(79,140,255,0.7),rgba(123,97,255,0.2),rgba(0,212,255,0.7),rgba(79,140,255,0.7))] opacity-70 [mask:radial-gradient(farthest-side,transparent_calc(100%-3px),#000_calc(100%-3px))]" />
-            <div className="relative aspect-square w-72 overflow-hidden rounded-full border border-white/15 bg-white/5 sm:w-80">
+            <div className="absolute inset-x-[-1.5rem] inset-y-4 rounded-full bg-gradient-to-tr from-accent/30 via-accent-secondary/25 to-accent-warm/25 blur-2xl sm:inset-y-6" />
+            <div className="absolute inset-x-[-0.75rem] inset-y-[1.75rem] animate-spin-slow rounded-full bg-[conic-gradient(from_0deg,rgba(79,140,255,0.8),rgba(123,97,255,0.2),rgba(255,122,198,0.6),rgba(0,212,255,0.7),rgba(79,140,255,0.8))] opacity-80 [mask:radial-gradient(farthest-side,transparent_calc(100%-3px),#000_calc(100%-3px))] sm:inset-y-[2.25rem]" />
+            <div className="relative aspect-square w-64 overflow-hidden rounded-full border border-white/15 bg-white/5 sm:w-80">
               <img
                 src={PROFILE.photo}
                 alt={`${PROFILE.name} — ${PROFILE.role}`}

@@ -27,9 +27,22 @@ const AnimatedBackground = () => {
         className="absolute inset-0 opacity-70"
         style={{
           background:
-            "radial-gradient(60% 50% at 15% 10%, rgba(79,140,255,0.18), transparent 60%), radial-gradient(55% 45% at 85% 15%, rgba(123,97,255,0.16), transparent 60%), radial-gradient(50% 50% at 50% 100%, rgba(0,212,255,0.12), transparent 60%)",
+            "radial-gradient(60% 50% at 15% 10%, rgba(79,140,255,0.2), transparent 60%), radial-gradient(55% 45% at 85% 15%, rgba(123,97,255,0.18), transparent 60%), radial-gradient(45% 40% at 92% 85%, rgba(255,122,198,0.10), transparent 62%), radial-gradient(50% 50% at 50% 100%, rgba(0,212,255,0.12), transparent 60%)",
         }}
       />
+
+      {/* Slow aurora sweep behind the hero */}
+      {!reduce && (
+        <div
+          className="absolute left-1/2 top-[-20%] h-[75vh] w-[130vw] -translate-x-1/2 animate-aurora opacity-60 blur-[90px]"
+          style={{
+            background:
+              "conic-gradient(from 200deg at 50% 50%, rgba(79,140,255,0.0), rgba(79,140,255,0.35) 18%, rgba(0,212,255,0.28) 32%, rgba(123,97,255,0.38) 52%, rgba(255,122,198,0.22) 70%, rgba(79,140,255,0.0) 90%)",
+            maskImage: "radial-gradient(closest-side, #000 35%, transparent 100%)",
+            WebkitMaskImage: "radial-gradient(closest-side, #000 35%, transparent 100%)",
+          }}
+        />
+      )}
 
       {/* Floating blurred blobs */}
       {!reduce && (

@@ -224,6 +224,26 @@ export const DEFAULT_EDUCATION = [
 // Project data — content & links preserved exactly from the original site
 export const DEFAULT_PROJECTS = [
   {
+    id: 7,
+    title: "Sentinel Health IQ — Preventive Care Infrastructure",
+    description:
+      "Healthcare workflow platform that turns the 'doctor chase' into a standing connection to the patient chart. Connects read-only to a practice's EMR over FHIR R4, runs an eligibility engine against USPSTF and Medicare preventive-care schedules, and surfaces exactly which patients qualify for which service. Physicians review and sign every order, patient outreach and scheduling run through the practice's CRM, and results write back to the chart as audit-ready documentation. Includes role-based experiences for the provider, patient and lab, plus a multilingual interface.",
+    technologies: ["Next.js", "React", "Tailwind CSS", "FHIR R4", "HL7", "Vercel"],
+    image: "/images/sentinel-health-iq.jpg",
+    category: "Healthcare",
+    live: "https://app.sentinelhealthiq.com/",
+  },
+  {
+    id: 8,
+    title: "ITIF Medical — European Healthcare Recruitment Platform",
+    description:
+      "Specialized recruitment platform connecting healthcare professionals, graduates and trainees with trusted employers across the Netherlands, Germany, Belgium and the wider EU. Features a searchable job board with filters for organization type, job category and location, rich vacancy cards, and dedicated Organization and Recruiter portals for posting roles and managing candidates. Covers nursing, medicine, allied health, home care, laboratories, pharmacies, medical technology and healthcare IT.",
+    technologies: ["React", "Vite", "React Router", "Firebase", "Axios"],
+    image: "/images/itif-medical.jpg",
+    category: "Healthcare",
+    live: "https://itifmedical.com/",
+  },
+  {
     id: 5,
     title: "SMN Online — Enterprise News & Media Platform",
     description:
@@ -239,6 +259,7 @@ export const DEFAULT_PROJECTS = [
       "PayPal",
     ],
     image: "/images/smn-online.png",
+    category: "Web Platforms",
     live: "https://smn-online.com/",
   },
   {
@@ -256,7 +277,8 @@ export const DEFAULT_PROJECTS = [
       "AWS",
       "CI/CD",
     ],
-    image: "/images/bitesy.png",
+    image: "/images/bitesy.jpg",
+    category: "Commerce",
     live: "https://bitesy.net/"
 
   },
@@ -267,6 +289,7 @@ export const DEFAULT_PROJECTS = [
       "Full-stack getir clone application with React, Node.js, and MongoDB. Features include user authentication, product management, shopping cart, and payment integration.",
     technologies: ["React", "Node.js", "MongoDB", "Express", "Stripe", "Tailwind CSS"],
     image: "/images/getir-clone.png",
+    category: "Commerce",
     github: "https://github.com/MdAwais343/Getir-Clone",
     live: "https://getir-clone-silk.vercel.app/",
   },
@@ -286,6 +309,7 @@ export const DEFAULT_PROJECTS = [
       "AWS",
     ],
     image: "/images/ojiyo.png",
+    category: "Commerce",
     live: "https://ojiyo.ai/",
   },
   {
@@ -303,6 +327,7 @@ export const DEFAULT_PROJECTS = [
       "Framer Motion",
     ],
     image: "/images/TextStruct.png",
+    category: "Web Platforms",
     github: "https://github.com/MdAwais343/textstruct",
     live: "https://textstruct308.vercel.app/",
   },
@@ -320,7 +345,8 @@ export const DEFAULT_PROJECTS = [
       "Tailwind CSS",
       "Framer Motion",
     ],
-    image: "/images/Portfolio.png",
+    image: "/images/Portfolio.jpg",
+    category: "Web Platforms",
     github: "https://github.com/MdAwais343/Awais-Portfolio",
     live: "https://awais-portfolio-sage.vercel.app/",
   },

@@ -10,6 +10,7 @@ module.exports = {
           DEFAULT: "#4F8CFF",
           secondary: "#7B61FF",
           highlight: "#00D4FF",
+          warm: "#FF7AC6",
         },
         muted: "#9CA3AF",
       },
@@ -58,6 +59,16 @@ module.exports = {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0" },
         },
+        orbit: {
+          to: { transform: "rotate(360deg)" },
+        },
+        "orbit-reverse": {
+          to: { transform: "rotate(-360deg)" },
+        },
+        aurora: {
+          "0%, 100%": { transform: "translate3d(0,0,0) scale(1)" },
+          "50%": { transform: "translate3d(4%, -3%, 0) scale(1.12)" },
+        },
       },
       animation: {
         float: "float 6s ease-in-out infinite",
@@ -68,6 +79,9 @@ module.exports = {
         "spin-slow": "spin-slow 22s linear infinite",
         "pulse-glow": "pulse-glow 5s ease-in-out infinite",
         blink: "blink 1s step-end infinite",
+        orbit: "orbit 28s linear infinite",
+        "orbit-reverse": "orbit-reverse 28s linear infinite",
+        aurora: "aurora 16s ease-in-out infinite",
       },
     },
   },

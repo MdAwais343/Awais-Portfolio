@@ -1,134 +1,359 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowUpRight, Github, Maximize2, X } from "lucide-react";
 import api from "../api/client";
-import { DEFAULT_PROJECTS } from "../data/portfolio";
+import { DEFAULT_PROJECTS, SOCIALS } from "../data/portfolio";
 import SectionHeading from "./ui/SectionHeading";
 import Reveal from "./ui/Reveal";
 
-const AUTOPLAY_MS = 5500;
+const FALLBACK_CATEGORY = "Projects";
 
-const slideVariants = {
-  enter: (direction) => ({
-    x: direction > 0 ? 320 : -320,
-    opacity: 0,
-    scale: 0.94,
-  }),
-  center: {
-    x: 0,
-    opacity: 1,
-    scale: 1,
-    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+const CATEGORY_STYLES = {
+  Healthcare: {
+    chip: "border-accent-warm/30 bg-accent-warm/10 text-accent-warm",
+    glow: "rgba(255,122,198,0.16)",
   },
-  exit: (direction) => ({
-    x: direction > 0 ? -320 : 320,
-    opacity: 0,
-    scale: 0.94,
-    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
-  }),
+  Commerce: {
+    chip: "border-accent-highlight/30 bg-accent-highlight/10 text-accent-highlight",
+    glow: "rgba(0,212,255,0.15)",
+  },
+  "Web Platforms": {
+    chip: "border-accent/30 bg-accent/10 text-accent",
+    glow: "rgba(79,140,255,0.18)",
+  },
+};
+const DEFAULT_CATEGORY_STYLE = {
+  chip: "border-accent-secondary/30 bg-accent-secondary/10 text-accent-secondary",
+  glow: "rgba(123,97,255,0.16)",
 };
 
-const ProjectSlide = ({ project, index, total }) => {
-  const num = String(index + 1).padStart(2, "0");
+const getCategory = (project) => project.category || FALLBACK_CATEGORY;
+const getCategoryStyle = (project) => CATEGORY_STYLES[getCategory(project)] || DEFAULT_CATEGORY_STYLE;
+
+// "Name — Tagline" → { name, tagline }
+const splitTitle = (title = "") => {
+  const [name, ...rest] = title.split(" — ");
+  return { name, tagline: rest.join(" — ") };
+};
+
+const hostOf = (url) => {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
+};
+
+const BrowserFrame = ({ project, className = "", children }) => {
+  const [failed, setFailed] = useState(false);
+  const host = hostOf(project.live);
 
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-3xl glass lg:flex-row">
-      {/* Image */}
-      <div className="relative aspect-[16/10] shrink-0 overflow-hidden lg:aspect-auto lg:w-[48%]">
-        <img
-          src={project.image}
-          alt={project.title}
-          loading="lazy"
-          className="h-full w-full object-cover object-top"
-          onError={(e) => {
-            e.target.style.display = "none";
-            if (e.target.nextSibling) e.target.nextSibling.style.display = "flex";
-          }}
-        />
-        <div
-          className="hidden h-full min-h-[220px] w-full items-center justify-center bg-gradient-to-br from-accent/30 to-accent-secondary/30"
-          style={{ display: "none" }}
-        >
-          <span className="font-display text-5xl font-bold text-white/80">
-            {project.title.charAt(0)}
-          </span>
-        </div>
-
-        <div className="absolute inset-0 bg-gradient-to-t from-bg/80 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-bg/60" />
-
-        <span className="absolute right-4 top-4 font-mono text-xs font-medium tracking-widest text-white/40">
-          {num} / {String(total).padStart(2, "0")}
+    <div
+      className={`overflow-hidden rounded-xl border border-white/10 bg-[#0b1020] shadow-soft ${className}`}
+    >
+      <div className="flex items-center gap-2 border-b border-white/10 bg-white/[0.04] px-3 py-2">
+        <span className="flex gap-1.5" aria-hidden>
+          <i className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+          <i className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+          <i className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+        </span>
+        <span className="ml-2 flex-1 truncate rounded-md bg-white/5 px-3 py-0.5 text-center text-[11px] text-muted">
+          {host || project.title}
         </span>
       </div>
 
-      {/* Content */}
-      <div className="flex flex-1 flex-col p-6 sm:p-8">
-        <motion.h3
-          key={`title-${project.id}`}
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15, duration: 0.4 }}
-          className="font-display text-2xl font-semibold text-white sm:text-3xl"
-        >
-          {project.title}
-        </motion.h3>
+      <div className="relative aspect-[16/10] overflow-hidden bg-white/[0.03]">
+        {failed ? (
+          <div className="grid h-full w-full place-items-center bg-gradient-to-br from-accent/30 to-accent-secondary/30">
+            <span className="font-display text-5xl font-bold text-white/80">
+              {project.title.charAt(0)}
+            </span>
+          </div>
+        ) : (
+          <img
+            src={project.image}
+            alt={`${project.title} screenshot`}
+            loading="lazy"
+            onError={() => setFailed(true)}
+            className="h-full w-full object-cover object-top transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]"
+          />
+        )}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-bg/50 via-transparent to-transparent" />
+        {children}
+      </div>
+    </div>
+  );
+};
 
-        <motion.p
-          key={`desc-${project.id}`}
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.22, duration: 0.4 }}
-          className="mt-3 line-clamp-4 text-sm leading-relaxed text-muted sm:text-base"
+const TechChips = ({ technologies = [], limit }) => {
+  const shown = limit ? technologies.slice(0, limit) : technologies;
+  const extra = technologies.length - shown.length;
+  return (
+    <div className="flex flex-wrap gap-2">
+      {shown.map((tech) => (
+        <span
+          key={tech}
+          className="rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-white/75"
+        >
+          {tech}
+        </span>
+      ))}
+      {extra > 0 && (
+        <span className="rounded-md border border-dashed border-white/15 px-2.5 py-1 text-xs font-medium text-muted">
+          +{extra}
+        </span>
+      )}
+    </div>
+  );
+};
+
+const ProjectCard = ({ project, index, featured, reverse, onOpen }) => {
+  const ref = useRef(null);
+  const [pos, setPos] = useState({ x: -300, y: -300 });
+  const [hover, setHover] = useState(false);
+  const { name, tagline } = splitTitle(project.title);
+  const style = getCategoryStyle(project);
+
+  const handleMove = (e) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    setPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+
+  return (
+    <motion.article
+      ref={ref}
+      layout
+      initial={{ opacity: 0, y: 40, scale: 0.97 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.2 } }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      onMouseMove={handleMove}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      className={`group gradient-border relative flex flex-col overflow-hidden rounded-3xl glass transition-shadow duration-500 hover:shadow-glow ${
+        featured
+          ? `md:col-span-2 lg:col-span-3 ${reverse ? "lg:flex-row-reverse" : "lg:flex-row"}`
+          : ""
+      }`}
+    >
+      {/* cursor spotlight */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300"
+        style={{
+          opacity: hover ? 1 : 0,
+          background: `radial-gradient(460px circle at ${pos.x}px ${pos.y}px, ${style.glow}, transparent 65%)`,
+        }}
+      />
+
+      {/* media */}
+      <button
+        type="button"
+        onClick={() => onOpen(project)}
+        aria-label={`View details for ${name}`}
+        className={`relative z-10 block shrink-0 p-4 pb-0 text-left outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+          featured
+            ? `lg:w-[55%] lg:self-center lg:p-6 ${reverse ? "lg:pl-0" : "lg:pr-0"}`
+            : ""
+        }`}
+      >
+        <BrowserFrame project={project}>
+          <span className="absolute inset-0 grid place-items-center bg-bg/40 opacity-0 backdrop-blur-[2px] transition-opacity duration-300 group-hover:opacity-100">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-bg/70 px-4 py-2 text-xs font-semibold text-white">
+              <Maximize2 className="h-3.5 w-3.5" />
+              View details
+            </span>
+          </span>
+        </BrowserFrame>
+      </button>
+
+      {/* content */}
+      <div
+        className={`relative z-10 flex flex-1 flex-col p-5 pt-5 sm:p-6 ${
+          featured ? "lg:justify-center lg:p-10" : "lg:p-7"
+        }`}
+      >
+        <div className="flex items-center justify-between gap-3">
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider ${style.chip}`}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-current" />
+            {getCategory(project)}
+          </span>
+          <span className="font-mono text-xs tracking-widest text-white/30">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+        </div>
+
+        <h3 className="mt-4 font-display text-xl font-semibold leading-snug text-white sm:text-2xl">
+          {name}
+        </h3>
+        {tagline && <p className="mt-1 text-sm font-medium text-accent-highlight/90">{tagline}</p>}
+
+        <p
+          className={`mt-3 text-sm leading-relaxed text-muted ${
+            featured ? "line-clamp-5" : "line-clamp-3"
+          }`}
         >
           {project.description}
-        </motion.p>
+        </p>
 
-        <motion.div
-          key={`tech-${project.id}`}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.4 }}
-          className="mt-5 flex flex-wrap gap-2"
-        >
-          {project.technologies.map((tech) => (
-            <span
-              key={tech}
-              className="rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-white/70"
-            >
-              {tech}
-            </span>
-          ))}
-        </motion.div>
+        <div className="mt-5">
+          <TechChips technologies={project.technologies} limit={featured ? 6 : 4} />
+        </div>
 
-        <motion.div
-          key={`links-${project.id}`}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.38, duration: 0.4 }}
-          className="mt-auto flex flex-wrap items-center gap-4 pt-8"
-        >
+        <div className="mt-auto flex flex-wrap items-center gap-3 pt-6">
           {project.live && (
             <a
               href={project.live}
               target="_blank"
               rel="noopener noreferrer"
-              className="group/link inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-accent to-accent-secondary px-6 py-2.5 text-sm font-semibold text-white shadow-glow transition-transform duration-200 hover:scale-105"
+              className="group/link inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-accent to-accent-secondary px-5 py-2 text-sm font-semibold text-white shadow-glow transition-transform duration-200 hover:scale-105"
             >
               Live Demo
               <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
             </a>
           )}
-        </motion.div>
+          {project.github && (
+            <a
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${name} source code on GitHub`}
+              className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-white/80 transition-colors hover:border-white/30 hover:text-white"
+            >
+              <Github className="h-[18px] w-[18px]" />
+            </a>
+          )}
+          <button
+            type="button"
+            onClick={() => onOpen(project)}
+            className="ml-auto text-sm font-medium text-muted transition-colors hover:text-white"
+          >
+            Details →
+          </button>
+        </div>
       </div>
-    </article>
+    </motion.article>
+  );
+};
+
+const ProjectModal = ({ project, onClose }) => {
+  const closeRef = useRef(null);
+  const { name, tagline } = splitTitle(project.title);
+  const style = getCategoryStyle(project);
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeRef.current?.focus();
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [onClose]);
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center sm:p-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25 }}
+    >
+      <div className="absolute inset-0 bg-bg/80 backdrop-blur-md" onClick={onClose} aria-hidden />
+
+      <motion.div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="project-modal-title"
+        initial={{ opacity: 0, y: 48, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 32, scale: 0.97 }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        className="relative z-10 flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-t-3xl border border-white/10 bg-[#0a0f1c] shadow-glow-lg sm:rounded-3xl"
+      >
+        <button
+          ref={closeRef}
+          type="button"
+          onClick={onClose}
+          aria-label="Close project details"
+          className="absolute right-4 top-4 z-20 grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-bg/80 text-white backdrop-blur transition-colors hover:border-accent/50 hover:bg-accent/20"
+        >
+          <X className="h-5 w-5" />
+        </button>
+
+        <div className="overflow-y-auto">
+          <div className="p-4 pb-0 sm:p-6 sm:pb-0">
+            <BrowserFrame project={project} />
+          </div>
+
+          <div className="p-6 sm:p-8">
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider ${style.chip}`}
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-current" />
+              {getCategory(project)}
+            </span>
+
+            <h3
+              id="project-modal-title"
+              className="mt-4 font-display text-2xl font-semibold text-white sm:text-4xl"
+            >
+              {name}
+            </h3>
+            {tagline && <p className="mt-2 text-base font-medium text-accent-highlight">{tagline}</p>}
+
+            <p className="mt-5 text-sm leading-relaxed text-muted sm:text-base">
+              {project.description}
+            </p>
+
+            <p className="mb-3 mt-7 text-xs font-semibold uppercase tracking-[0.2em] text-white/50">
+              Tech stack
+            </p>
+            <TechChips technologies={project.technologies} />
+
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              {project.live && (
+                <a
+                  href={project.live}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group/link inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-accent to-accent-secondary px-6 py-2.5 text-sm font-semibold text-white shadow-glow transition-transform duration-200 hover:scale-105"
+                >
+                  Visit live site
+                  <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
+                </a>
+              )}
+              {project.github && (
+                <a
+                  href={project.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:border-white/30 hover:bg-white/10"
+                >
+                  <Github className="h-4 w-4" />
+                  Source code
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
 const Projects = () => {
   const [projects, setProjects] = useState(DEFAULT_PROJECTS);
-  const [current, setCurrent] = useState(0);
-  const [direction, setDirection] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [filter, setFilter] = useState("All");
+  const [selected, setSelected] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -147,29 +372,21 @@ const Projects = () => {
     };
   }, []);
 
-  const paginate = useCallback(
-    (newDirection) => {
-      setDirection(newDirection);
-      setCurrent((prev) => {
-        const next = prev + newDirection;
-        if (next < 0) return projects.length - 1;
-        if (next >= projects.length) return 0;
-        return next;
-      });
-    },
-    [projects.length]
+  const categories = useMemo(() => {
+    const counts = new Map();
+    projects.forEach((p) => counts.set(getCategory(p), (counts.get(getCategory(p)) || 0) + 1));
+    return [
+      { name: "All", count: projects.length },
+      ...Array.from(counts, ([name, count]) => ({ name, count })),
+    ];
+  }, [projects]);
+
+  const visible = useMemo(
+    () => (filter === "All" ? projects : projects.filter((p) => getCategory(p) === filter)),
+    [projects, filter]
   );
 
-  const goTo = (index) => {
-    setDirection(index > current ? 1 : -1);
-    setCurrent(index);
-  };
-
-  useEffect(() => {
-    if (paused || projects.length <= 1) return;
-    const timer = setInterval(() => paginate(1), AUTOPLAY_MS);
-    return () => clearInterval(timer);
-  }, [paused, paginate, projects.length, current]);
+  const closeModal = useCallback(() => setSelected(null), []);
 
   if (!projects.length) return null;
 
@@ -180,97 +397,82 @@ const Projects = () => {
           <SectionHeading
             eyebrow="Projects"
             title="Selected work"
-            subtitle="A showcase of products I've designed and built — from full-stack apps to polished frontends."
+            subtitle="Products I've helped design and ship — healthcare platforms, marketplaces, media and more."
           />
         </Reveal>
 
-        <Reveal delay={0.1}>
-          <div
-            className="relative"
-            onMouseEnter={() => setPaused(true)}
-            onMouseLeave={() => setPaused(false)}
-          >
-            {/* Carousel viewport */}
-            <div className="relative min-h-[480px] overflow-hidden sm:min-h-[420px] lg:min-h-[380px]">
-              <AnimatePresence initial={false} custom={direction} mode="wait">
-                <motion.div
-                  key={projects[current].id}
-                  custom={direction}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  className="absolute inset-0"
-                >
-                  <ProjectSlide
-                    project={projects[current]}
-                    index={current}
-                    total={projects.length}
-                  />
-                </motion.div>
-              </AnimatePresence>
+        {categories.length > 2 && (
+          <Reveal delay={0.05}>
+            <div className="-mt-6 mb-10 flex flex-wrap items-center justify-center gap-2">
+              {categories.map((cat) => {
+                const isActive = filter === cat.name;
+                return (
+                  <button
+                    key={cat.name}
+                    type="button"
+                    onClick={() => setFilter(cat.name)}
+                    aria-pressed={isActive}
+                    className={`relative rounded-full border px-5 py-2 text-sm font-medium transition-colors ${
+                      isActive
+                        ? "border-transparent text-white"
+                        : "border-white/10 bg-white/[0.04] text-muted hover:border-white/25 hover:text-white"
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.span
+                        layoutId="project-filter-active"
+                        className="absolute inset-0 rounded-full bg-gradient-to-r from-accent to-accent-secondary shadow-glow"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                    <span className="relative z-10">
+                      {cat.name}
+                      <span className={`ml-2 text-xs ${isActive ? "text-white/80" : "text-white/40"}`}>
+                        {cat.count}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
+          </Reveal>
+        )}
 
-            {/* Navigation arrows */}
-            {projects.length > 1 && (
-              <>
-                <button
-                  onClick={() => paginate(-1)}
-                  aria-label="Previous project"
-                  className="absolute -left-2 top-1/2 z-10 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/10 bg-bg/80 text-white backdrop-blur transition-all duration-200 hover:border-accent/40 hover:bg-accent/20 sm:-left-5 sm:h-12 sm:w-12"
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-                <button
-                  onClick={() => paginate(1)}
-                  aria-label="Next project"
-                  className="absolute -right-2 top-1/2 z-10 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/10 bg-bg/80 text-white backdrop-blur transition-all duration-200 hover:border-accent/40 hover:bg-accent/20 sm:-right-5 sm:h-12 sm:w-12"
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </button>
-              </>
-            )}
+        <motion.div layout className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <AnimatePresence mode="popLayout">
+            {visible.map((project, i) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                index={i}
+                featured={filter === "All" && i < 2}
+                reverse={i === 1}
+                onOpen={setSelected}
+              />
+            ))}
+          </AnimatePresence>
+        </motion.div>
 
-            {/* Dots + progress */}
-            {projects.length > 1 && (
-              <div className="mt-8 flex flex-col items-center gap-4">
-                <div className="flex items-center gap-2">
-                  {projects.map((project, i) => (
-                    <button
-                      key={project.id}
-                      onClick={() => goTo(i)}
-                      aria-label={`Go to project ${i + 1}`}
-                      className="group relative h-2 overflow-hidden rounded-full transition-all duration-300"
-                      style={{ width: i === current ? 40 : 8 }}
-                    >
-                      <span className="absolute inset-0 rounded-full bg-white/15" />
-                      {i === current && (
-                        <motion.span
-                          layoutId="project-dot-active"
-                          className="absolute inset-0 rounded-full bg-gradient-to-r from-accent to-accent-secondary"
-                        />
-                      )}
-                      {!paused && i === current && (
-                        <motion.span
-                          key={`progress-${current}`}
-                          className="absolute inset-y-0 left-0 rounded-full bg-white/30"
-                          initial={{ width: "0%" }}
-                          animate={{ width: "100%" }}
-                          transition={{ duration: AUTOPLAY_MS / 1000, ease: "linear" }}
-                        />
-                      )}
-                    </button>
-                  ))}
-                </div>
-
-                <p className="text-xs text-muted">
-                  {projects[current].title}
-                </p>
-              </div>
-            )}
+        <Reveal delay={0.1}>
+          <div className="mt-12 flex flex-col items-center gap-3 text-center">
+            <p className="text-sm text-muted">Want to see more of what I've built?</p>
+            <a
+              href={SOCIALS.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:border-white/30 hover:bg-white/10"
+            >
+              <Github className="h-4 w-4" />
+              Browse more on GitHub
+              <ArrowUpRight className="h-4 w-4" />
+            </a>
           </div>
         </Reveal>
       </div>
+
+      <AnimatePresence>
+        {selected && <ProjectModal key={selected.id} project={selected} onClose={closeModal} />}
+      </AnimatePresence>
     </section>
   );
 };
