@@ -86,6 +86,16 @@ const BrowserFrame = ({ project, className = "", children }) => {
   );
 };
 
+const RoleLabel = ({ role }) =>
+  role ? (
+    <p className="mt-3 flex items-center gap-2 text-xs font-medium text-white/75">
+      <span className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] uppercase tracking-wider text-white/50">
+        My role
+      </span>
+      {role}
+    </p>
+  ) : null;
+
 const TechChips = ({ technologies = [], limit }) => {
   const shown = limit ? technologies.slice(0, limit) : technologies;
   const extra = technologies.length - shown.length;
@@ -191,6 +201,7 @@ const ProjectCard = ({ project, index, featured, reverse, onOpen }) => {
           {name}
         </h3>
         {tagline && <p className="mt-1 text-sm font-medium text-accent-highlight/90">{tagline}</p>}
+        <RoleLabel role={project.role} />
 
         <p
           className={`mt-3 text-sm leading-relaxed text-muted ${
@@ -309,6 +320,7 @@ const ProjectModal = ({ project, onClose }) => {
               {name}
             </h3>
             {tagline && <p className="mt-2 text-base font-medium text-accent-highlight">{tagline}</p>}
+            <RoleLabel role={project.role} />
 
             <p className="mt-5 text-sm leading-relaxed text-muted sm:text-base">
               {project.description}
