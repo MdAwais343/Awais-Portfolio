@@ -217,25 +217,6 @@ app.get("/api/projects", (req, res) => {
       github: "https://github.com/MdAwais343/Getir-Clone",
       live: "https://getir-clone-silk.vercel.app/",
     },
-    {
-      id: 4,
-      title: "Portfolio Website",
-      description:
-        "Personal portfolio website built with modern web technologies and responsive design.",
-      technologies: [
-        "React",
-        "Node.js",
-        "Express",
-        "CSS3",
-        "Responsive Design",
-        "Tailwind CSS",
-        "Framer Motion",
-      ],
-      image: "/images/Portfolio.jpg",
-      category: "Web Platforms",
-      github: "https://github.com/MdAwais343/Awais-Portfolio",
-      live: "https://awais-portfolio-sage.vercel.app/",
-    },
   ];
 
   res.json(projects);
